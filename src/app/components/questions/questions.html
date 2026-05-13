@@ -1,0 +1,19 @@
+<section class="faq-section">
+  <h2>Preguntas Frecuentes</h2>
+  <div class="faq-grid">
+    <div
+      class="faq-item"
+      *ngFor="let faq of faqs; let i = index"
+      (click)="toggleFaq(i)"
+      [class.active]="faq.open"
+    >
+      <div class="faq-question">
+        <mat-icon>{{ faq.open ? 'expand_less' : 'expand_more' }}</mat-icon>
+        {{ faq.pregunta }}
+      </div>
+      <div class="faq-answer" [style.maxHeight]="faq.open ? '200px' : '0'">
+        {{ faq.respuesta }}
+      </div>
+    </div>
+  </div>
+</section>

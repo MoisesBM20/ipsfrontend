@@ -1,0 +1,63 @@
+<div class="module-header">
+  <div class="audit-filters">
+    <div class="search-box">
+      <span class="material-icons">search</span>
+      <input type="text" [(ngModel)]="filterSearch" placeholder="Buscar por descripción o usuario..."
+             (keyup.enter)="load()">
+    </div>
+    <select [(ngModel)]="filterEntityType" (change)="load()" class="entity-select">
+      @for (t of entityTypes; track t.value) {
+        <option [value]="t.value">{{ t.label }}</option>
+      }
+    </select>
+    @if (filterSearch.trim() || filterEntityType) {
+      <button class="btn-link" (click)="clearFilters()">Limpiar</button>
+    }
+  </div>
+  <button class="btn-secondary" (click)="load()">
+    <span class="material-icons">refresh</span> Actualizar
+  </button>
+</div>
+
+<div class="card">
+  @if (loading()) {
+    <div class="loading"><div class="spinner"></div><p>Cargando registros...</p></div>
+  } @else if (logs().length === 0) {
+    <div class="empty">
+      <span class="material-icons">history</span>
+      <p>No hay registros de actividad.</p>
+    </div>
+  } @else {
+    <div class="audit-count">{{ logs().length }} registros</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Fecha / Hora</th>
+          <th>Usuario</th>
+          <th>Rol</th>
+          <th>Acción</th>
+          <th>Entidad</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (log of logs(); track log.id) {
+          <tr>
+            <td class="date-col">{{ log.timestamp | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td><strong>{{ log.user_name ?? 'Sistema' }}</strong></td>
+            <td class="text-muted">{{ roleLabel(log.user_role) }}</td>
+            <td>
+              <span class="action-tag" [class]="actionClass(log.action)">
+                {{ actionLabel(log.action) }}
+              </span>
+            </td>
+            <td>
+              <span class="entity-tag">{{ entityLabel(log.entity_type) }}</span>
+            </td>
+            <td class="desc-col">{{ log.description }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

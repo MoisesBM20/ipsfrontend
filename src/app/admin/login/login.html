@@ -1,0 +1,72 @@
+<div class="login-page">
+  <div class="login-card">
+
+    <div class="login-header">
+      <img src="assets/images/global/logo2.png" alt="Logo CUIDANDO DE TI" class="login-logo">
+      <h1>Panel Administrativo</h1>
+      <p>Ingresa tus credenciales para continuar</p>
+    </div>
+
+    @if (errorMsg()) {
+      <div class="alert-error">
+        <span class="material-icons">error_outline</span>
+        {{ errorMsg() }}
+      </div>
+    }
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="field">
+        <label for="email">Correo electrónico</label>
+        <div class="input-row">
+          <span class="material-icons field-icon">mail_outline</span>
+          <input id="email" type="email" [(ngModel)]="email" name="email"
+            placeholder="usuario@ipscuidandodeti.com" autocomplete="email" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">Contraseña</label>
+        <div class="input-row">
+          <span class="material-icons field-icon">lock_outline</span>
+          <input id="password" [type]="showPassword() ? 'text' : 'password'"
+            [(ngModel)]="password" name="password" placeholder="••••••••"
+            autocomplete="current-password" required>
+          <button type="button" class="toggle-vis" (click)="togglePassword()" tabindex="-1">
+            <span class="material-icons">{{ showPassword() ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner"></span> Verificando...
+        } @else {
+          <span class="material-icons">login</span> Ingresar
+        }
+      </button>
+    </form>
+
+    <div class="login-footer-links">
+      <a routerLink="/" class="back-link">
+        <span class="material-icons">arrow_back</span> Volver al sitio web
+      </a>
+      <a routerLink="/registro" class="register-link">
+        ¿Eres paciente? <strong>Regístrate aquí</strong>
+      </a>
+    </div>
+
+  </div>
+
+  <div class="login-info">
+    <div class="info-content">
+      <h2>CUIDANDO DE TI<br>CyE IPS SAS</h2>
+      <p>Sistema integrado de gestión de servicios de salud</p>
+      <ul class="feature-list">
+        <li><span class="material-icons">calendar_month</span> Gestión de citas y disponibilidad</li>
+        <li><span class="material-icons">folder_open</span> Historias clínicas electrónicas</li>
+        <li><span class="material-icons">people</span> Administración de pacientes</li>
+        <li><span class="material-icons">summarize</span> Reportes RIPS 2.0</li>
+      </ul>
+    </div>
+  </div>
+</div>

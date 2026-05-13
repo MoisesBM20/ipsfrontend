@@ -1,0 +1,68 @@
+<section class="pqrs-container">
+  <h2>Contáctanos</h2>
+
+  <div class="form-wrapper">
+    <form (ngSubmit)="onSubmit()" #form="ngForm" novalidate>
+      <div class="form-field">
+        <label>Nombre completo *</label>
+        <input type="text" name="nombre" [(ngModel)]="formData.nombre" required />
+      </div>
+
+      <div class="form-field">
+        <label>Correo electrónico *</label>
+        <input type="email" name="email" [(ngModel)]="formData.email" required />
+      </div>
+
+      <div class="form-field">
+        <label>Teléfono</label>
+        <input type="tel" name="telefono" [(ngModel)]="formData.telefono" />
+      </div>
+
+      <div class="form-field">
+        <label>Mensaje *</label>
+        <textarea name="mensaje" rows="4" [(ngModel)]="formData.mensaje" required></textarea>
+      </div>
+
+      <button type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Enviando...' : 'Enviar mensaje' }}
+      </button>
+    </form>
+
+    <div class="info-sidebar">
+      <h3>Otras vías de contacto</h3>
+      <p>Si prefieres una atención inmediata, escríbenos por nuestras redes sociales:</p>
+      
+      <div class="social-links">
+        <a href="https://wa.me/+573001234567" target="_blank" class="social-item whatsapp">
+          <mat-icon>chat</mat-icon>
+          <span>WhatsApp</span>
+        </a>
+
+        <a href="https://t.me/+573001234567" target="_blank" class="social-item telegram">
+          <mat-icon>send</mat-icon>
+          <span>Telegram</span>
+        </a>
+      </div>
+      
+      <div class="horario">
+        <small>Atención: Lun - Vie, 8:00 AM - 6:00 PM</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" *ngIf="showSuccess">
+    <div class="modal-content success">
+      <mat-icon>check_circle</mat-icon>
+      <p>Mensaje enviado con éxito. Te responderemos pronto.</p>
+      <button (click)="closeModals()">Cerrar</button>
+    </div>
+  </div>
+
+  <div class="modal" *ngIf="showError">
+    <div class="modal-content error">
+      <mat-icon>error</mat-icon>
+      <p>Error al enviar el mensaje. Verifica tus datos e intenta de nuevo.</p>
+      <button (click)="closeModals()">Cerrar</button>
+    </div>
+  </div>
+</section>

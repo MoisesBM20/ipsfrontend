@@ -1,0 +1,13 @@
+@use '../admin-shared' as *;
+
+.name-cell { font-weight: 500; }
+.inactive-row td { opacity: 0.55; }
+
+.btn-toggle {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: 1px solid $border; border-radius: 6px;
+  padding: 5px 10px; font-size: 0.78rem; font-family: 'Poppins',sans-serif;
+  cursor: pointer; color: $muted; white-space: nowrap;
+  .material-icons { font-size: 18px; }
+  &:hover { background: #f1f5f9; color: $text; }
+}

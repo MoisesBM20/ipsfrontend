@@ -1,0 +1,57 @@
+@use '../admin-shared' as *;
+
+.prof-select {
+  display: flex; align-items: center; gap: 8px;
+  background: $white; border: 1px solid $border; border-radius: 8px; padding: 0 12px;
+  .material-icons { font-size: 18px; color: $muted; }
+  select { border: none; outline: none; padding: 10px 0; font-family: 'Poppins',sans-serif; font-size: 0.875rem; min-width: 260px; cursor: pointer; }
+}
+
+.week-grid {
+  display: flex; gap: 0; overflow-x: auto;
+  padding: 0;
+}
+
+.day-col {
+  flex: 1; min-width: 160px; border-right: 1px solid $border;
+  &:last-child { border-right: none; }
+}
+
+.day-header {
+  padding: 10px 14px; background: #f8fafc;
+  font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: $muted; border-bottom: 1px solid $border;
+}
+
+.slot-card {
+  padding: 12px 14px; border-bottom: 1px solid #f1f5f9;
+  position: relative;
+  &:last-child { border-bottom: none; }
+  &:hover .slot-delete { opacity: 1; }
+}
+
+.slot-time {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.875rem; font-weight: 600; color: #0f172a;
+  .material-icons { font-size: 16px; color: #2563eb; }
+}
+
+.slot-meta {
+  display: flex; flex-direction: column; gap: 2px; margin-top: 4px;
+  span { font-size: 0.75rem; color: $muted; }
+}
+
+.slot-delete {
+  position: absolute; top: 8px; right: 8px;
+  background: none; border: none; cursor: pointer; padding: 4px;
+  border-radius: 4px; opacity: 0; transition: opacity 0.15s, background 0.15s;
+  color: #b91c1c;
+  .material-icons { font-size: 16px; }
+  &:hover { background: #fee2e2; }
+}
+
+.hint {
+  display: flex; align-items: flex-start; gap: 6px;
+  font-size: 0.8rem; color: $muted; margin-top: 16px; margin-bottom: 0;
+  .material-icons { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+}

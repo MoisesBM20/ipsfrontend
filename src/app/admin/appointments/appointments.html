@@ -1,0 +1,291 @@
+<!-- Encabezado con filtros opcionales -->
+<div class="module-header">
+  <div class="filters-row">
+    <div class="filter-group">
+      <span class="material-icons filter-icon">calendar_today</span>
+      <input type="date" [(ngModel)]="filterFrom" placeholder="Desde" (change)="applyFilters()">
+      <span class="filter-sep">—</span>
+      <input type="date" [(ngModel)]="filterTo" placeholder="Hasta" (change)="applyFilters()">
+    </div>
+    <div class="search-box cedula-search">
+      <span class="material-icons">badge</span>
+      <input type="text" [(ngModel)]="filterDocument" placeholder="Buscar por cédula..."
+             (keyup.enter)="applyFilters()">
+      @if (filterDocument.trim()) {
+        <button class="btn-clear" (click)="clearFilters()"><span class="material-icons">close</span></button>
+      }
+      <button class="btn-icon" (click)="applyFilters()">Buscar</button>
+    </div>
+    @if (filterFrom || filterTo || filterDocument.trim()) {
+      <button class="btn-link" (click)="clearFilters()">Limpiar filtros</button>
+    }
+  </div>
+  <button class="btn-primary" (click)="openForm()">
+    <span class="material-icons">add</span> Nueva cita
+  </button>
+</div>
+
+<div class="card">
+  @if (loading()) {
+    <div class="loading"><div class="spinner"></div><p>Cargando citas...</p></div>
+  } @else if (appointments().length === 0) {
+    <div class="empty">
+      <span class="material-icons">event_busy</span>
+      <p>No hay citas registradas.</p>
+      <button class="btn-primary" (click)="openForm()">Agendar cita</button>
+    </div>
+  } @else {
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Paciente</th>
+          <th>Profesional</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Observaciones / Motivo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (a of appointments(); track a.id) {
+          <tr>
+            <td class="date-cell">{{ a.appointment_date | date:'dd/MM/yyyy' }}</td>
+            <td class="time-cell">{{ a.start_time.slice(0,5) }} – {{ a.end_time.slice(0,5) }}</td>
+            <td>
+              <div class="patient-info">
+                <span class="patient-name">{{ a.patient_name }}</span>
+                <span class="patient-doc">{{ a.patient_document }}</span>
+              </div>
+            </td>
+            <td>{{ a.professional_name }}</td>
+            <td class="type-cell">{{ typeLabel(a.appointment_type) }}</td>
+            <td><span class="badge" [class]="statusClass(a.status)">{{ statusLabel(a.status) }}</span></td>
+            <td class="obs-cell">
+              @if (a.cancellation_reason) {
+                <div class="obs-cancel"><span class="material-icons">cancel</span>{{ a.cancellation_reason }}</div>
+              }
+              @if (a.notes) {
+                <div class="obs-note"><span class="material-icons">notes</span>{{ a.notes }}</div>
+              }
+              @if (!a.cancellation_reason && !a.notes) { <span class="obs-empty">—</span> }
+            </td>
+            <td>
+              <div class="action-row">
+                @if (canAtender(a)) {
+                  <button class="btn-action btn-atender" (click)="atender(a)" title="Iniciar atención y abrir Historia Clínica">
+                    <span class="material-icons">medical_services</span> Atender
+                  </button>
+                }
+                @if (a.status === 'en_atencion') {
+                  <span class="in-progress-label">
+                    <span class="material-icons">radio_button_checked</span> En atención
+                  </span>
+                }
+                @if (canEdit(a)) {
+                  <button class="btn-action btn-edit" (click)="openEditModal(a)" title="Modificar cita">
+                    <span class="material-icons">edit_calendar</span>
+                  </button>
+                }
+                @if (canCancel(a)) {
+                  <button class="btn-action btn-cancel" (click)="openCancelModal(a.id)" title="Cancelar cita">
+                    <span class="material-icons">cancel</span>
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
+
+<!-- ── Modal Nueva Cita ── -->
+@if (showForm()) {
+  <div class="modal-backdrop" (click)="showForm.set(false)">
+    <div class="modal modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Agendar Cita</h3>
+        <button class="btn-icon-only" (click)="showForm.set(false)"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        @if (formError()) { <div class="alert-error"><span class="material-icons">error_outline</span>{{ formError() }}</div> }
+        <div class="form-grid">
+          <div class="field field-full">
+            <label>Paciente *</label>
+            <div class="search-inline">
+              <span class="material-icons">search</span>
+              <input type="text" [(ngModel)]="patientSearch" (keyup.enter)="searchPatients()"
+                placeholder="Buscar por nombre o documento..." name="patient_search">
+              <button class="btn-icon" (click)="searchPatients()">Buscar</button>
+            </div>
+            @if (patientSearchResults().length > 0) {
+              <div class="search-dropdown">
+                @for (p of patientSearchResults(); track p.id) {
+                  <div class="search-option" (click)="selectPatient(p)">
+                    <span class="material-icons">person</span>
+                    <span><strong>{{ p.first_name }} {{ p.last_name }}</strong> — {{ p.document_type }} {{ p.document_number }}</span>
+                  </div>
+                }
+              </div>
+            }
+            @if (selectedPatient()) {
+              <div class="selected-patient">
+                <span class="material-icons">check_circle</span>
+                <span>{{ selectedPatient()!.first_name }} {{ selectedPatient()!.last_name }} ({{ selectedPatient()!.document_type }} {{ selectedPatient()!.document_number }})</span>
+              </div>
+            }
+          </div>
+          <div class="field">
+            <label>Profesional *</label>
+            <select [(ngModel)]="form.professional_id" name="professional" (change)="onProfessionalOrDateChange()">
+              <option [value]="0">Seleccionar profesional...</option>
+              @for (p of professionals(); track p.id) {
+                <option [value]="p.id">{{ p.full_name }} — {{ p.specialty ?? p.role }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label>Fecha *</label>
+            <input type="date" [(ngModel)]="form.appointment_date" name="appt_date"
+              (change)="onProfessionalOrDateChange()" [min]="today()">
+          </div>
+          <div class="field field-full">
+            <label>Horario disponible *</label>
+            @if (slotsLoading()) {
+              <p class="slot-hint"><span class="spinner-sm"></span> Cargando disponibilidad...</p>
+            } @else if (!form.professional_id || !form.appointment_date) {
+              <p class="slot-hint">Selecciona un profesional y fecha para ver los horarios.</p>
+            } @else if (availableSlots().length === 0) {
+              <p class="slot-hint no-slots">No hay horarios disponibles para esta fecha.</p>
+            } @else {
+              <div class="slot-grid">
+                @for (s of availableSlots(); track s.start_time) {
+                  <button type="button" class="slot-btn"
+                    [class.selected]="form.start_time === s.start_time"
+                    [class.occupied]="!s.is_available"
+                    [disabled]="!s.is_available"
+                    (click)="form.start_time = s.start_time">
+                    {{ s.start_time }}
+                    @if (!s.is_available) { <span class="slot-occ">Ocupado</span> }
+                  </button>
+                }
+              </div>
+            }
+          </div>
+          <div class="field">
+            <label>Tipo de servicio *</label>
+            <select [(ngModel)]="form.appointment_type" name="appt_type">
+              @for (t of appointmentTypes; track t.value) {
+                <option [value]="t.value">{{ t.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label>Motivo de consulta</label>
+            <input type="text" [(ngModel)]="form.reason" name="reason" placeholder="Breve descripción...">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="showForm.set(false)">Cancelar</button>
+        <button class="btn-primary" (click)="saveAppointment()" [disabled]="saving()">
+          @if (saving()) { <span class="spinner-sm"></span> Guardando... }
+          @else { <span class="material-icons">event</span> Confirmar cita }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Modal Cancelar ── -->
+@if (showCancelModal()) {
+  <div class="modal-backdrop" (click)="showCancelModal.set(false)">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Cancelar cita</h3>
+        <button class="btn-icon-only" (click)="showCancelModal.set(false)"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Motivo de cancelación *</label>
+          <textarea [(ngModel)]="cancelReason" rows="3" placeholder="Indique el motivo..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="showCancelModal.set(false)">Volver</button>
+        <button class="btn-danger" (click)="confirmCancel()" [disabled]="!cancelReason.trim()">
+          <span class="material-icons">cancel</span> Cancelar cita
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Modal Editar / Reprogramar ── -->
+@if (showEditModal()) {
+  <div class="modal-backdrop" (click)="showEditModal.set(false)">
+    <div class="modal modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><span class="material-icons">edit_calendar</span> Modificar cita</h3>
+        <button class="btn-icon-only" (click)="showEditModal.set(false)"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        @if (editError()) { <div class="alert-error"><span class="material-icons">error_outline</span>{{ editError() }}</div> }
+        @if (editingAppointment(); as a) {
+          <div class="edit-current-info">
+            <span class="material-icons">info</span>
+            Cita actual: <strong>{{ a.patient_name }}</strong> — {{ a.appointment_date | date:'dd/MM/yyyy' }} a las {{ a.start_time.slice(0,5) }} con {{ a.professional_name }}
+          </div>
+        }
+        <div class="form-grid">
+          <div class="field">
+            <label>Profesional *</label>
+            <select [(ngModel)]="editProf" (change)="editSlot=''; loadEditSlots()">
+              <option [value]="0">Seleccionar...</option>
+              @for (p of professionals(); track p.id) {
+                <option [value]="p.id">{{ p.full_name }} — {{ p.specialty ?? p.role }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label>Nueva fecha *</label>
+            <input type="date" [(ngModel)]="editDate" (change)="editSlot=''; loadEditSlots()" [min]="today()">
+          </div>
+          <div class="field field-full">
+            <label>Nuevo horario *</label>
+            @if (editSlotsLoading()) {
+              <p class="slot-hint"><span class="spinner-sm"></span> Cargando horarios...</p>
+            } @else if (!editProf || !editDate) {
+              <p class="slot-hint">Selecciona profesional y fecha.</p>
+            } @else if (editSlots().length === 0) {
+              <p class="slot-hint no-slots">No hay horarios disponibles.</p>
+            } @else {
+              <div class="slot-grid">
+                @for (s of editSlots(); track s.start_time) {
+                  <button type="button" class="slot-btn"
+                    [class.selected]="editSlot === s.start_time"
+                    [class.occupied]="!s.is_available"
+                    [disabled]="!s.is_available"
+                    (click)="editSlot = s.start_time">
+                    {{ s.start_time }}
+                    @if (!s.is_available) { <span class="slot-occ">Ocupado</span> }
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="showEditModal.set(false)">Cancelar</button>
+        <button class="btn-primary" (click)="saveEdit()" [disabled]="editSaving()">
+          @if (editSaving()) { <span class="spinner-sm"></span> Guardando... }
+          @else { <span class="material-icons">save</span> Guardar cambios }
+        </button>
+      </div>
+    </div>
+  </div>
+}

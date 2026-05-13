@@ -1,0 +1,111 @@
+<div class="module-header">
+  <div></div>
+  <button class="btn-primary" (click)="openForm()">
+    <span class="material-icons">person_add</span> Nuevo empleado
+  </button>
+</div>
+
+<div class="card">
+  @if (loading()) {
+    <div class="loading"><div class="spinner"></div><p>Cargando empleados...</p></div>
+  } @else if (users().length === 0) {
+    <div class="empty"><span class="material-icons">manage_accounts</span><p>No hay empleados registrados.</p></div>
+  } @else {
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nombre completo</th>
+          <th>Correo electrónico</th>
+          <th>Documento</th>
+          <th>Rol</th>
+          <th>Especialidad</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of users(); track u.id) {
+          <tr [class.inactive-row]="!u.is_active">
+            <td class="name-cell">{{ u.full_name }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.document_number }}</td>
+            <td><span class="badge" [class]="roleBadgeClass(u.role)">{{ roleLabel(u.role) }}</span></td>
+            <td>{{ u.specialty ?? '—' }}</td>
+            <td>
+              <span class="badge" [class]="u.is_active ? 'badge-green' : 'badge-gray'">
+                {{ u.is_active ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td>
+              <button class="btn-toggle" (click)="toggleActive(u)"
+                [title]="u.is_active ? 'Desactivar usuario' : 'Activar usuario'">
+                <span class="material-icons">{{ u.is_active ? 'toggle_on' : 'toggle_off' }}</span>
+                {{ u.is_active ? 'Desactivar' : 'Activar' }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
+
+@if (showForm()) {
+  <div class="modal-backdrop" (click)="showForm.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Registrar Empleado</h3>
+        <button class="btn-icon-only" (click)="showForm.set(false)"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        @if (formError()) { <div class="alert-error"><span class="material-icons">error_outline</span>{{ formError() }}</div> }
+        @if (formSuccess()) { <div class="alert-success"><span class="material-icons">check_circle</span>{{ formSuccess() }}</div> }
+        <div class="form-grid">
+          <div class="field field-full">
+            <label>Nombre completo *</label>
+            <input type="text" [(ngModel)]="form.full_name" name="full_name" placeholder="Nombres y apellidos">
+          </div>
+          <div class="field">
+            <label>Correo electrónico *</label>
+            <input type="email" [(ngModel)]="form.email" name="email" placeholder="usuario@dominio.com">
+          </div>
+          <div class="field">
+            <label>Contraseña *</label>
+            <input type="password" [(ngModel)]="form.password" name="password" placeholder="Mín. 8 caracteres">
+          </div>
+          <div class="field">
+            <label>Número de documento *</label>
+            <input type="text" [(ngModel)]="form.document_number" name="doc_num" placeholder="Ej: 1012345678">
+          </div>
+          <div class="field">
+            <label>Teléfono</label>
+            <input type="tel" [(ngModel)]="form.phone" name="phone" placeholder="Ej: 3001234567">
+          </div>
+          <div class="field">
+            <label>Rol *</label>
+            <select [(ngModel)]="form.role" name="role">
+              @for (r of roles; track r.value) {
+                <option [value]="r.value">{{ r.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label>Especialidad</label>
+            <input type="text" [(ngModel)]="form.specialty" name="specialty" placeholder="Ej: Medicina General">
+          </div>
+          <div class="field">
+            <label>No. Tarjeta profesional</label>
+            <input type="text" [(ngModel)]="form.registration_number" name="reg_num" placeholder="Ej: RM-001234">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="showForm.set(false)">Cancelar</button>
+        <button class="btn-primary" (click)="saveUser()" [disabled]="saving()">
+          @if (saving()) { <span class="spinner-sm"></span> Guardando... }
+          @else { <span class="material-icons">save</span> Crear empleado }
+        </button>
+      </div>
+    </div>
+  </div>
+}

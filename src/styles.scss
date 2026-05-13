@@ -1,0 +1,182 @@
+/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+// Define el tema a partir de la paleta que elegiste en la instalación.
+/*@include mat.core();
+
+$mi-eps-primary: mat.define-palette(mat.$blue-palette, 700);
+$mi-eps-accent: mat.define-palette(mat.$cyan-palette, A400);
+$mi-eps-warn: mat.define-palette(mat.$red-palette);
+
+$mi-eps-theme: mat.define-light-theme((
+  color: (
+    primary: $mi-eps-primary,
+    accent: $mi-eps-accent,
+    warn: $mi-eps-warn,
+  )
+));
+
+@include mat.all-component-themes($mi-eps-theme);*/
+
+:root {
+  --primary-color: #005A9C;
+  --secondary-color: #00B5E2;
+  --text-color: #333333;
+  --text-color-light: #666666;
+  --background-light: #f8f9fa;
+  --white: #ffffff;
+  --border-color: #dee2e6;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+html, body { height: 100%; }
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-color);
+    background-color: var(--white);
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+// Ocultar el chat bot (Typebot) en rutas de admin/portal
+body.is-admin-route typebot-bubble,
+body.is-admin-route #typebot-bubble,
+body.is-admin-route [id^="typebot"],
+body.is-admin-route [class*="typebot"] {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+// Reset global de botones — garantiza que toda el área sea clickeable
+button {
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  max-width: 100vw;
+}
+
+.section-padding {
+    padding: 5rem 0;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--text-color-light);
+    margin-bottom: 3.5rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+// Media Queries para responsividad global
+@media (max-width: 1200px) {
+    .container {
+        width: 100%;
+        padding: 0 0.8rem;
+        box-sizing: border-box;
+        max-width: 100vw;
+    }
+    
+    .section-padding {
+        padding: 4rem 0;
+    }
+    
+    .section-title {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .container {
+        width: 100%;
+        padding: 0 0.5rem;
+        box-sizing: border-box;
+        max-width: 100vw;
+    }
+    
+    .section-padding {
+        padding: 3.5rem 0;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1rem;
+        margin-bottom: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        font-size: 15px;
+    }
+    
+    .container {
+        width: 100%;
+        padding: 0 1rem;
+        box-sizing: border-box;
+        max-width: 100vw;
+    }
+    
+    .section-padding {
+        padding: 3rem 0;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .section-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 2.5rem;
+        padding: 0 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+    
+    .container {
+        width: 100%;
+        padding: 0 0.8rem;
+        box-sizing: border-box;
+        max-width: 100vw;
+    }
+    
+    .section-padding {
+        padding: 2.5rem 0;
+    }
+    
+    .section-title {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .section-subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+        padding: 0 0.3rem;
+    }
+}

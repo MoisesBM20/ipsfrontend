@@ -1,0 +1,99 @@
+@if (loading()) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando estadísticas...</p>
+  </div>
+}
+
+@if (error()) {
+  <div class="error-state">
+    <span class="material-icons">warning</span>
+    {{ error() }}
+  </div>
+}
+
+@if (!loading() && stats()) {
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-blue"><span class="material-icons">calendar_today</span></div>
+      <div><div class="kpi-val">{{ stats()!.appointments.today_total }}</div><div class="kpi-lbl">Citas hoy</div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon bg-green"><span class="material-icons">check_circle</span></div>
+      <div><div class="kpi-val">{{ stats()!.appointments.today_completed }}</div><div class="kpi-lbl">Completadas hoy</div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon bg-amber"><span class="material-icons">pending</span></div>
+      <div><div class="kpi-val">{{ stats()!.appointments.today_pending }}</div><div class="kpi-lbl">Pendientes hoy</div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon bg-indigo"><span class="material-icons">date_range</span></div>
+      <div><div class="kpi-val">{{ stats()!.appointments.this_week }}</div><div class="kpi-lbl">Esta semana</div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon bg-teal"><span class="material-icons">people</span></div>
+      <div><div class="kpi-val">{{ stats()!.patients.total }}</div><div class="kpi-lbl">Pacientes registrados</div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon bg-slate"><span class="material-icons">folder_open</span></div>
+      <div><div class="kpi-val">{{ stats()!.patients.with_clinical_record }}</div><div class="kpi-lbl">Con historia clínica</div></div>
+    </div>
+  </div>
+
+  <!-- Acciones rápidas -->
+  <div class="quick-grid">
+    <a routerLink="/admin/appointments" class="quick-card">
+      <span class="material-icons">calendar_month</span>
+      <span>Nueva cita</span>
+    </a>
+    <a routerLink="/admin/patients" class="quick-card">
+      <span class="material-icons">person_add</span>
+      <span>Registrar paciente</span>
+    </a>
+    <a routerLink="/admin/availability" class="quick-card">
+      <span class="material-icons">schedule</span>
+      <span>Disponibilidad</span>
+    </a>
+    <a routerLink="/admin/rips" class="quick-card">
+      <span class="material-icons">summarize</span>
+      <span>Generar RIPS</span>
+    </a>
+  </div>
+
+  <!-- Próximas citas -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Próximas citas — próximos 7 días</h2>
+      <a routerLink="/admin/appointments" class="link-more">Ver todas</a>
+    </div>
+    @if (stats()!.upcoming_appointments.length === 0) {
+      <p class="empty">No hay citas programadas para los próximos 7 días.</p>
+    } @else {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Paciente</th>
+            <th>Profesional</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of stats()!.upcoming_appointments; track a.id) {
+            <tr>
+              <td>{{ a.date | date:'dd/MM/yyyy' }}</td>
+              <td>{{ a.time.slice(0,5) }}</td>
+              <td>{{ a.patient_name }}</td>
+              <td>{{ a.professional_name }}</td>
+              <td>{{ typeLabel(a.type) }}</td>
+              <td><span class="badge" [class]="statusClass(a.status)">{{ statusLabel(a.status) }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+}

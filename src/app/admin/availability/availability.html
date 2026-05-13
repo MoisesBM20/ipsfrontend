@@ -1,0 +1,114 @@
+<div class="module-header">
+  <div class="prof-select">
+    <span class="material-icons">person</span>
+    <select [(ngModel)]="selectedProfId" name="prof" (change)="onProfChange()">
+      <option [value]="0">Seleccionar profesional...</option>
+      @for (p of professionals(); track p.id) {
+        <option [value]="p.id">{{ p.full_name }} — {{ p.specialty ?? p.role }}</option>
+      }
+    </select>
+  </div>
+  <button class="btn-primary" (click)="openForm()" [disabled]="!selectedProfId()">
+    <span class="material-icons">add</span> Agregar horario
+  </button>
+</div>
+
+@if (deleteError()) {
+  <div class="alert-error"><span class="material-icons">error_outline</span>{{ deleteError() }}</div>
+}
+
+<div class="card">
+  @if (loading()) {
+    <div class="loading"><div class="spinner"></div><p>Cargando disponibilidad...</p></div>
+  } @else if (!selectedProfId()) {
+    <div class="empty"><span class="material-icons">schedule</span><p>Selecciona un profesional para ver su disponibilidad.</p></div>
+  } @else if (groupedSlots().length === 0) {
+    <div class="empty">
+      <span class="material-icons">event_busy</span>
+      <p>Este profesional no tiene horarios configurados.</p>
+      <button class="btn-primary" (click)="openForm()">Configurar primer horario</button>
+    </div>
+  } @else {
+    <div class="week-grid">
+      @for (group of groupedSlots(); track group.day) {
+        <div class="day-col">
+          <div class="day-header">{{ group.label }}</div>
+          @for (slot of group.slots; track slot.id) {
+            <div class="slot-card">
+              <div class="slot-time">
+                <span class="material-icons">schedule</span>
+                {{ slot.start_time.slice(0,5) }} – {{ slot.end_time.slice(0,5) }}
+              </div>
+              <div class="slot-meta">
+                <span>{{ slot.slot_duration_minutes }} min/cita</span>
+                @if (slot.service_type) { <span>{{ slot.service_type }}</span> }
+              </div>
+              <button class="slot-delete" (click)="deleteSlot(slot.id)" title="Eliminar horario">
+                <span class="material-icons">delete_outline</span>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Modal Agregar Horario -->
+@if (showForm()) {
+  <div class="modal-backdrop" (click)="showForm.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Agregar Horario de Disponibilidad</h3>
+        <button class="btn-icon-only" (click)="showForm.set(false)"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        @if (formError()) { <div class="alert-error"><span class="material-icons">error_outline</span>{{ formError() }}</div> }
+        <div class="form-grid">
+          <div class="field field-full">
+            <label>Día de la semana *</label>
+            <select [(ngModel)]="form.day_of_week" name="dow">
+              @for (d of days; track d.value) {
+                <option [value]="d.value">{{ d.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label>Hora de inicio *</label>
+            <input type="time" [(ngModel)]="form.start_time" name="start_time">
+          </div>
+          <div class="field">
+            <label>Hora de fin *</label>
+            <input type="time" [(ngModel)]="form.end_time" name="end_time">
+          </div>
+          <div class="field">
+            <label>Duración de cada cita (minutos)</label>
+            <select [(ngModel)]="form.slot_duration_minutes" name="duration">
+              <option [value]="15">15 minutos</option>
+              <option [value]="20">20 minutos</option>
+              <option [value]="30">30 minutos</option>
+              <option [value]="45">45 minutos</option>
+              <option [value]="60">60 minutos</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Tipo de servicio</label>
+            <input type="text" [(ngModel)]="form.service_type" name="service_type"
+              placeholder="Ej: consulta_medica, sueroterapia...">
+          </div>
+        </div>
+        <p class="hint">
+          <span class="material-icons">info</span>
+          El sistema generará automáticamente los slots de tiempo en base a la duración configurada.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="showForm.set(false)">Cancelar</button>
+        <button class="btn-primary" (click)="saveSlot()" [disabled]="saving()">
+          @if (saving()) { <span class="spinner-sm"></span> Guardando... }
+          @else { <span class="material-icons">save</span> Guardar horario }
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,412 @@
+<div class="portal-layout">
+
+  <!-- Topbar -->
+  <header class="portal-topbar">
+    <div class="brand">
+      <img src="assets/images/global/logo2.png" alt="Logo IPS" class="brand-logo">
+      <span class="brand-name">CUIDANDO DE TI CyE IPS SAS</span>
+    </div>
+    <div class="topbar-right">
+      <span class="user-name">{{ auth.currentUser()?.full_name }}</span>
+      <button class="btn-topbar-icon" (click)="openProfile()" title="Mi perfil">
+        <span class="material-icons">manage_accounts</span>
+      </button>
+      <button class="btn-logout" (click)="logout()" title="Cerrar sesión">
+        <span class="material-icons">logout</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenido -->
+  <main class="portal-content">
+
+    <!-- Bienvenida -->
+    @if (profile(); as p) {
+      <div class="welcome-card">
+        <div class="welcome-icon"><span class="material-icons">waving_hand</span></div>
+        <div class="welcome-info">
+          <div class="welcome-title">Bienvenido, {{ p.full_name }}</div>
+          <div class="welcome-sub">{{ p.document_type }} {{ p.document_number }} &nbsp;·&nbsp; EPS: {{ p.eps ?? 'No registrada' }}</div>
+        </div>
+        <button class="btn-solicitar" (click)="openBooking()">
+          <span class="material-icons">add_circle</span> Solicitar cita
+        </button>
+      </div>
+    }
+
+    <!-- Próximas citas -->
+    <section class="section">
+      <h2 class="section-title">
+        <span class="material-icons">calendar_month</span> Próximas citas
+      </h2>
+
+      @if (loading()) {
+        <div class="loading-row"><div class="spinner"></div><span>Cargando citas...</span></div>
+      } @else if (upcoming().length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">event_available</span>
+          <p>No tienes citas próximas agendadas.</p>
+          <button class="btn-solicitar-center" (click)="openBooking()">
+            <span class="material-icons">add</span> Solicitar una cita
+          </button>
+        </div>
+      } @else {
+        <div class="appointments-grid">
+          @for (a of upcoming(); track a.id) {
+            <div class="appt-card">
+              <div class="appt-header">
+                <span class="badge" [class]="statusClass(a.status)">{{ statusLabel(a.status) }}</span>
+                <span class="appt-date">{{ a.appointment_date | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="appt-time">
+                <span class="material-icons">schedule</span> {{ a.start_time }} — {{ a.end_time }}
+              </div>
+              <div class="appt-type">{{ typeLabel(a.appointment_type) }}</div>
+              @if (a.professional_name) {
+                <div class="appt-prof">
+                  <span class="material-icons">person</span> {{ a.professional_name }}
+                </div>
+              }
+              @if (a.reason) {
+                <div class="appt-reason">{{ a.reason }}</div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Historial -->
+    @if (past().length > 0) {
+      <section class="section">
+        <h2 class="section-title">
+          <span class="material-icons">history</span> Historial de citas
+        </h2>
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Fecha</th><th>Hora</th><th>Tipo</th><th>Profesional</th><th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of past(); track a.id) {
+                <tr>
+                  <td>{{ a.appointment_date | date:'dd/MM/yyyy' }}</td>
+                  <td>{{ a.start_time }}</td>
+                  <td>{{ typeLabel(a.appointment_type) }}</td>
+                  <td>{{ a.professional_name ?? '—' }}</td>
+                  <td><span class="badge" [class]="statusClass(a.status)">{{ statusLabel(a.status) }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+
+  </main>
+</div>
+
+<!-- ── Modal Mi Perfil ────────────────────────────────────────────────────────── -->
+@if (showProfile()) {
+  <div class="modal-overlay" (click)="showProfile.set(false)">
+    <div class="profile-modal" (click)="$event.stopPropagation()">
+
+      <div class="profile-modal-header">
+        <h3><span class="material-icons">manage_accounts</span> Mi perfil</h3>
+        <button class="btn-close" (click)="showProfile.set(false)">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div class="profile-tabs">
+        <button [class.active]="profileTab()==='info'"     (click)="profileTab.set('info');     profileMsg.set('');profileError.set('')">
+          <span class="material-icons">person</span> Información
+        </button>
+        <button [class.active]="profileTab()==='password'" (click)="profileTab.set('password'); profileMsg.set('');profileError.set('')">
+          <span class="material-icons">lock</span> Contraseña
+        </button>
+      </div>
+
+      <div class="profile-modal-body">
+        @if (profileMsg()) {
+          <div class="prof-alert-success"><span class="material-icons">check_circle</span> {{ profileMsg() }}</div>
+        }
+        @if (profileError()) {
+          <div class="prof-alert-error"><span class="material-icons">error_outline</span> {{ profileError() }}</div>
+        }
+
+        @if (profileTab() === 'info') {
+          <div class="prof-form-grid">
+            <div class="field-group">
+              <label>Teléfono</label>
+              <input type="tel" [(ngModel)]="profileForm.phone" placeholder="Ej: 3001234567">
+            </div>
+            <div class="field-group">
+              <label>Correo electrónico</label>
+              <input type="email" [(ngModel)]="profileForm.email">
+            </div>
+            <div class="field-group">
+              <label>Dirección</label>
+              <input type="text" [(ngModel)]="profileForm.address">
+            </div>
+            <div class="field-group">
+              <label>Ciudad</label>
+              <input type="text" [(ngModel)]="profileForm.city">
+            </div>
+            <div class="field-group">
+              <label>EPS</label>
+              <input type="text" [(ngModel)]="profileForm.eps">
+            </div>
+            <div class="field-group">
+              <label>Régimen</label>
+              <select [(ngModel)]="profileForm.regime">
+                <option value="">— Seleccionar —</option>
+                <option value="Contributivo">Contributivo</option>
+                <option value="Subsidiado">Subsidiado</option>
+                <option value="Especial">Especial</option>
+                <option value="Vinculado">Vinculado</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label>Contacto de emergencia</label>
+              <input type="text" [(ngModel)]="profileForm.emergency_contact_name" placeholder="Nombre">
+            </div>
+            <div class="field-group">
+              <label>Teléfono emergencia</label>
+              <input type="tel" [(ngModel)]="profileForm.emergency_contact_phone" placeholder="Ej: 3001234567">
+            </div>
+            <div class="field-group">
+              <label>Parentesco</label>
+              <input type="text" [(ngModel)]="profileForm.emergency_contact_relationship" placeholder="Ej: Esposo/a, Hijo/a">
+            </div>
+          </div>
+        }
+
+        @if (profileTab() === 'password') {
+          <div class="prof-form-grid">
+            <div class="field-group">
+              <label>Contraseña actual</label>
+              <input type="password" [(ngModel)]="pwForm.current_password">
+            </div>
+            <div class="field-group">
+              <label>Nueva contraseña</label>
+              <input type="password" [(ngModel)]="pwForm.new_password" placeholder="Mínimo 6 caracteres">
+            </div>
+            <div class="field-group">
+              <label>Confirmar nueva contraseña</label>
+              <input type="password" [(ngModel)]="pwForm.confirm">
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="profile-modal-footer">
+        <button class="btn-secondary" (click)="showProfile.set(false)">Cerrar</button>
+        @if (profileTab() === 'info') {
+          <button class="btn-primary" (click)="saveProfile()" [disabled]="profileSaving()">
+            @if (profileSaving()) { <span class="spinner-sm"></span> } Guardar cambios
+          </button>
+        } @else {
+          <button class="btn-primary" (click)="savePassword()" [disabled]="profileSaving()">
+            @if (profileSaving()) { <span class="spinner-sm"></span> } Cambiar contraseña
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Modal de solicitud de cita ────────────────────────────────────────────── -->
+@if (showBooking()) {
+  <div class="modal-overlay" (click)="closeBooking()"></div>
+  <div class="booking-panel">
+
+    <div class="booking-header">
+      <h3>
+        <span class="material-icons">event_note</span>
+        Solicitar cita
+      </h3>
+      <button class="btn-close" (click)="closeBooking()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <!-- Éxito -->
+    @if (bookingSuccess(); as res) {
+      <div class="booking-success">
+        <span class="material-icons success-icon">check_circle</span>
+        <h4>¡Cita agendada con éxito!</h4>
+        <p>{{ res.message }}</p>
+        <div class="confirmation-code">Código: <strong>{{ res.confirmation_code }}</strong></div>
+        <div class="success-detail">
+          <span><span class="material-icons">person</span> {{ res.professional_name }}</span>
+          <span><span class="material-icons">calendar_today</span> {{ formatDate(res.appointment_date) }}</span>
+          <span><span class="material-icons">schedule</span> {{ res.start_time }} — {{ res.end_time }}</span>
+        </div>
+        <button class="btn-primary" (click)="closeBooking()">Cerrar</button>
+      </div>
+
+    } @else {
+
+      <!-- Indicador de pasos -->
+      <div class="steps-bar">
+        <div class="step" [class.active]="bookingStep() >= 1" [class.done]="bookingStep() > 1">
+          <span class="step-num">1</span><span class="step-label">Servicio</span>
+        </div>
+        <div class="step-line" [class.done]="bookingStep() > 1"></div>
+        <div class="step" [class.active]="bookingStep() >= 2" [class.done]="bookingStep() > 2">
+          <span class="step-num">2</span><span class="step-label">Fecha y hora</span>
+        </div>
+        <div class="step-line" [class.done]="bookingStep() > 2"></div>
+        <div class="step" [class.active]="bookingStep() >= 3">
+          <span class="step-num">3</span><span class="step-label">Confirmar</span>
+        </div>
+      </div>
+
+      <!-- ── Paso 1: Servicio y profesional ── -->
+      @if (bookingStep() === 1) {
+        <div class="booking-body">
+          @if (loadingServices()) {
+            <div class="loading-row"><div class="spinner"></div><span>Cargando servicios...</span></div>
+          } @else if (services().length === 0) {
+            <div class="no-services">No hay servicios disponibles en este momento.</div>
+          } @else {
+            <p class="step-hint">Selecciona el tipo de consulta:</p>
+            <div class="services-grid">
+              @for (svc of services(); track svc.service_type) {
+                <button class="service-card" [class.selected]="selectedService()?.service_type === svc.service_type"
+                        (click)="selectService(svc)">
+                  <span class="service-name">{{ svc.display_name }}</span>
+                  <span class="service-desc">{{ svc.description }}</span>
+                </button>
+              }
+            </div>
+
+            @if (selectedService(); as svc) {
+              @if (svc.professionals.length > 1) {
+                <div class="field-group">
+                  <label>Profesional</label>
+                  <select [ngModel]="selectedProfId()" (ngModelChange)="selectedProfId.set($event)">
+                    <option [ngValue]="null">— Selecciona un profesional —</option>
+                    @for (p of svc.professionals; track p.id) {
+                      <option [ngValue]="p.id">{{ p.name }}{{ p.specialty ? ' · ' + p.specialty : '' }}</option>
+                    }
+                  </select>
+                </div>
+              } @else {
+                <div class="prof-auto">
+                  <span class="material-icons">person</span>
+                  Profesional: <strong>{{ svc.professionals[0].name }}</strong>
+                  @if (svc.professionals[0].specialty) { <span> · {{ svc.professionals[0].specialty }}</span> }
+                </div>
+              }
+            }
+          }
+        </div>
+        <div class="booking-footer">
+          <button class="btn-secondary" (click)="closeBooking()">Cancelar</button>
+          <button class="btn-primary" [disabled]="!selectedService() || !selectedProfId()" (click)="goStep2()">
+            Siguiente <span class="material-icons">arrow_forward</span>
+          </button>
+        </div>
+      }
+
+      <!-- ── Paso 2: Fecha y hora ── -->
+      @if (bookingStep() === 2) {
+        <div class="booking-body">
+          <div class="field-group">
+            <label>Fecha de la cita</label>
+            <input type="date" [value]="selectedDate()" (change)="selectedDate.set($any($event.target).value); onDateChange()"
+                   [min]="minDate()" [max]="maxDate()">
+          </div>
+
+          @if (loadingSlots()) {
+            <div class="loading-row"><div class="spinner"></div><span>Buscando horarios disponibles...</span></div>
+          } @else if (selectedDate() && availableDays().length === 0 && !loadingSlots()) {
+            <div class="no-slots">No hay horarios disponibles para esta fecha. Intenta con otra.</div>
+          } @else if (availableSlots().length > 0) {
+            <div class="slots-label">Horarios disponibles:</div>
+            <div class="slots-grid">
+              @for (slot of slotsForDate(); track slot.start_time) {
+                <button class="slot-btn"
+                        [class.available]="slot.is_available"
+                        [class.taken]="!slot.is_available"
+                        [class.selected]="selectedSlot() === slot.start_time"
+                        [disabled]="!slot.is_available"
+                        (click)="selectSlot(slot)">
+                  {{ slot.start_time }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+        <div class="booking-footer">
+          <button class="btn-secondary" (click)="bookingStep.set(1)">
+            <span class="material-icons">arrow_back</span> Atrás
+          </button>
+          <button class="btn-primary" [disabled]="!selectedDate() || !selectedSlot()" (click)="goStep3()">
+            Siguiente <span class="material-icons">arrow_forward</span>
+          </button>
+        </div>
+      }
+
+      <!-- ── Paso 3: Confirmación ── -->
+      @if (bookingStep() === 3) {
+        <div class="booking-body">
+          <div class="confirm-summary">
+            <div class="confirm-row">
+              <span class="material-icons">medical_services</span>
+              <div>
+                <div class="confirm-label">Servicio</div>
+                <div class="confirm-value">{{ selectedService()?.display_name }}</div>
+              </div>
+            </div>
+            <div class="confirm-row">
+              <span class="material-icons">person</span>
+              <div>
+                <div class="confirm-label">Profesional</div>
+                <div class="confirm-value">{{ selectedProfessional()?.name }}</div>
+              </div>
+            </div>
+            <div class="confirm-row">
+              <span class="material-icons">calendar_today</span>
+              <div>
+                <div class="confirm-label">Fecha</div>
+                <div class="confirm-value">{{ formatDate(selectedDate()) }}</div>
+              </div>
+            </div>
+            <div class="confirm-row">
+              <span class="material-icons">schedule</span>
+              <div>
+                <div class="confirm-label">Hora</div>
+                <div class="confirm-value">{{ selectedSlot() }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Motivo de la consulta <span class="optional">(opcional)</span></label>
+            <textarea [(ngModel)]="bookingReason" rows="3"
+                      placeholder="Describe brevemente el motivo de tu consulta..."></textarea>
+          </div>
+
+          @if (bookingError()) {
+            <div class="error-msg">{{ bookingError() }}</div>
+          }
+        </div>
+        <div class="booking-footer">
+          <button class="btn-secondary" (click)="bookingStep.set(2)">
+            <span class="material-icons">arrow_back</span> Atrás
+          </button>
+          <button class="btn-primary btn-confirm" [disabled]="booking()" (click)="confirm()">
+            @if (booking()) { <div class="spinner-sm"></div> Agendando... }
+            @else { <span class="material-icons">check</span> Confirmar cita }
+          </button>
+        </div>
+      }
+
+    }
+  </div>
+}

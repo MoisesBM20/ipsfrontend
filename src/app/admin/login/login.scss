@@ -1,0 +1,246 @@
+$navy: #0f2644;
+$blue: #1d56a3;
+$accent: #2d8cff;
+$white: #fff;
+$bg: #f1f5f9;
+$border: #e2e8f0;
+$text: #0f172a;
+$muted: #64748b;
+$error-bg: #fef2f2;
+$error: #b91c1c;
+
+:host { display: block; height: 100vh; }
+
+.login-page {
+  display: flex;
+  height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+// ── Formulario ────────────────────────────────────────────────────────────────
+.login-card {
+  flex: 0 0 440px;
+  background: $white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 40px;
+  border-right: 1px solid $border;
+
+  @media (max-width: 768px) {
+    flex: 1;
+    border-right: none;
+    padding: 32px 24px;
+  }
+}
+
+.login-header {
+  margin-bottom: 32px;
+
+  .login-logo {
+    height: 48px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: $text;
+    margin: 0 0 4px;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: $muted;
+    margin: 0;
+  }
+}
+
+.alert-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: $error-bg;
+  color: $error;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  margin-bottom: 20px;
+
+  .material-icons { font-size: 18px; }
+}
+
+.login-form { display: flex; flex-direction: column; gap: 20px; }
+
+.field {
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $text;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  background: $bg;
+  border: 1.5px solid $border;
+  border-radius: 8px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus-within {
+    border-color: $accent;
+    box-shadow: 0 0 0 3px rgba($accent, 0.12);
+    background: $white;
+  }
+}
+
+.field-icon {
+  font-size: 18px;
+  color: $muted;
+  padding: 0 10px;
+  pointer-events: none;
+}
+
+.input-row input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 11px 8px;
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+  color: $text;
+  outline: none;
+
+  &::placeholder { color: #94a3b8; }
+}
+
+.toggle-vis {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 10px;
+  color: $muted;
+  display: flex;
+  align-items: center;
+  &:hover { color: $text; }
+  .material-icons { font-size: 18px; }
+}
+
+.btn-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: $blue;
+  color: $white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.15s, transform 0.15s;
+
+  .material-icons { font-size: 18px; }
+
+  &:hover:not(:disabled) { background: #1d4ed8; transform: translateY(-1px); }
+  &:disabled { opacity: 0.65; cursor: not-allowed; }
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba($white, 0.4);
+  border-top-color: $white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.login-footer-links {
+  display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 24px;
+}
+
+.register-link {
+  font-size: 0.85rem; color: $muted; text-decoration: none;
+  strong { color: $blue; }
+  &:hover strong { text-decoration: underline; }
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: $muted;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.15s;
+
+  .material-icons { font-size: 16px; }
+  &:hover { color: $blue; }
+}
+
+// ── Panel informativo ─────────────────────────────────────────────────────────
+.login-info {
+  flex: 1;
+  background: linear-gradient(145deg, $navy 0%, $blue 60%, #1a6fd4 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+
+  @media (max-width: 768px) { display: none; }
+}
+
+.info-content {
+  max-width: 380px;
+  color: $white;
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    font-size: 1rem;
+    opacity: 0.75;
+    margin: 0 0 36px;
+  }
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.95rem;
+    opacity: 0.9;
+
+    .material-icons {
+      font-size: 20px;
+      opacity: 0.8;
+      width: 24px;
+    }
+  }
+}

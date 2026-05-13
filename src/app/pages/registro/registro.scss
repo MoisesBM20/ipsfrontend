@@ -1,0 +1,64 @@
+$blue: #0f2644; $accent: #2563eb; $border: #e2e8f0; $text: #0f172a; $muted: #64748b; $red: #b91c1c;
+
+.registro-page {
+  min-height: 100vh; background: #f1f5f9;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 40px 16px;
+}
+
+.registro-card {
+  background: #fff; border-radius: 12px; width: 100%; max-width: 680px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 36px;
+}
+
+.registro-header {
+  text-align: center; margin-bottom: 28px;
+  .logo { width: 64px; margin-bottom: 12px; }
+  h1 { font-size: 1.4rem; font-weight: 700; color: $blue; margin: 0 0 6px; }
+  p { color: $muted; font-size: 0.9rem; margin: 0; }
+}
+
+.alert-error {
+  display: flex; align-items: center; gap: 8px;
+  background: #fee2e2; color: $red; border: 1px solid #fecaca;
+  border-radius: 8px; padding: 10px 14px; font-size: 0.875rem; margin-bottom: 20px;
+  .material-icons { font-size: 18px; }
+}
+
+.form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;
+  @media (max-width: 560px) { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex; flex-direction: column; gap: 5px;
+  &.field-full { grid-column: 1 / -1; }
+  label { font-size: 0.78rem; font-weight: 600; color: $text; text-transform: uppercase; letter-spacing: 0.04em; }
+  input, select {
+    border: 1.5px solid $border; border-radius: 7px; padding: 9px 12px;
+    font-size: 0.875rem; font-family: 'Poppins', sans-serif; color: $text;
+    background: #f8fafc; outline: none;
+    &:focus { border-color: $accent; background: #fff; box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+    &::placeholder { color: #94a3b8; }
+  }
+}
+
+.btn-submit {
+  width: 100%; padding: 13px; background: $blue; color: #fff; border: none;
+  border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer;
+  font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background 0.15s;
+  &:hover:not(:disabled) { background: #1d3a5c; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.spinner {
+  width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.login-link {
+  text-align: center; margin-top: 16px; font-size: 0.875rem; color: $muted;
+  a { color: $accent; text-decoration: none; font-weight: 600; &:hover { text-decoration: underline; } }
+}

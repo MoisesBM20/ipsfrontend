@@ -1,0 +1,31 @@
+@if (!isAdminRoute()) {
+  <app-navbar></app-navbar>
+}
+
+<main [class.main-content]="!isAdminRoute()">
+  <router-outlet></router-outlet>
+</main>
+
+@if (!isAdminRoute()) {
+  <app-footer></app-footer>
+}
+
+<!-- Botones flotantes solo en el sitio público -->
+@if (!isAdminRoute()) {
+  <div class="floating-contact-container">
+    <div class="floating-icons-stack">
+      <div class="floating-icon-wrapper">
+        <span class="floating-contact-text floating-text-top">Consulta rápida</span>
+        <a href="https://t.me/+573151054448" target="_blank" rel="noopener noreferrer" class="floating-icon-link floating-icon-top" aria-label="Contactar por Audífonos">
+          <mat-icon>headphones</mat-icon>
+        </a>
+      </div>
+      <div class="floating-icon-wrapper">
+        <span class="floating-contact-text floating-text-bottom">Agenda tu cita</span>
+        <a href="https://wa.me/+573151054448" target="_blank" rel="noopener noreferrer" class="floating-icon-link floating-icon-bottom" aria-label="Contactar por WhatsApp">
+          <img src="assets/images/global/wsp.png" alt="WhatsApp">
+        </a>
+      </div>
+    </div>
+  </div>
+}

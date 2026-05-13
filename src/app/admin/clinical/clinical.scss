@@ -1,0 +1,276 @@
+@use '../admin-shared' as *;
+
+// ── Barra de acciones (vista detalle) ────────────────────────────────────────
+.detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+// ── Utilidades de tabla ───────────────────────────────────────────────────────
+.btn-sm { padding: 6px 12px !important; font-size: 0.82rem !important; }
+.text-muted { color: $muted; font-size: 0.85rem; }
+
+// ── Documento HC (contenedor principal de la HC en pantalla) ─────────────────
+.hc-doc {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+// ── Encabezado del documento ──────────────────────────────────────────────────
+.hc-doc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 3px solid #1a3c6e;
+  background: #f8fafc;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hc-brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.hc-brand-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1a3c6e;
+  letter-spacing: 0.03em;
+}
+
+.hc-brand-sub {
+  font-size: 0.75rem;
+  color: $muted;
+  margin-top: 2px;
+}
+
+.hc-doc-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1a3c6e;
+  text-align: center;
+}
+
+.hc-doc-num {
+  font-size: 0.78rem;
+  color: $muted;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 2px;
+}
+
+.hc-doc-contact {
+  font-size: 0.78rem;
+  color: $muted;
+  text-align: right;
+  line-height: 1.5;
+}
+
+// ── Separador entre entradas ──────────────────────────────────────────────────
+.hc-entry-sep {
+  background: #1a3c6e;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 6px 16px;
+}
+
+// ── Tabla HC ──────────────────────────────────────────────────────────────────
+.hc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  color: $text;
+
+  td, th {
+    border: 1px solid #c8d5e8;
+    padding: 6px 10px;
+    vertical-align: middle;
+  }
+
+  // Encabezado de sección (azul marino oscuro)
+  .hc-hdr {
+    background: #1a3c6e;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    text-align: left;
+    padding: 7px 12px;
+  }
+
+  // Celda de etiqueta (azul claro grisáceo)
+  .hc-lbl {
+    background: #dce8f4;
+    color: #1a3c6e;
+    font-weight: 700;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    width: 160px;
+    min-width: 100px;
+  }
+
+  // Sub-encabezado de sección de texto libre
+  .hc-sub {
+    background: #eaf0f8;
+    color: #1a3c6e;
+    font-weight: 700;
+    font-size: 0.73rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 5px 10px;
+  }
+
+  // Celda de texto libre con saltos de línea
+  .hc-pre {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  // Fuente monoespaciada (prescripciones)
+  .hc-mono {
+    font-family: 'Courier New', monospace;
+    background: #f8fafc;
+    font-size: 0.82rem;
+  }
+
+  // Texto centrado
+  .hc-center { text-align: center; }
+
+  // Alerta de alergias
+  .hc-alert-lbl {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  .hc-alert-val {
+    color: #b91c1c;
+    font-weight: 600;
+  }
+
+  // Anchos de columna específicos
+  .hc-w50  { width: 50px; }
+  .hc-w110 { width: 110px; }
+  .hc-w150 { width: 150px; }
+}
+
+// ── Estados vacíos ────────────────────────────────────────────────────────────
+.hc-no-record {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 20px;
+  color: $muted;
+  text-align: center;
+
+  .material-icons { font-size: 48px; color: $blue; }
+  p { margin: 0; font-size: 0.9rem; }
+}
+
+.hc-no-entries {
+  padding: 16px 20px;
+  font-size: 0.875rem;
+  color: $muted;
+  background: #f8fafc;
+  border-top: 1px solid $border;
+}
+
+// ── Banner del paciente en el formulario ──────────────────────────────────────
+.form-patient-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  color: #1e40af;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+
+  .material-icons { font-size: 18px; }
+}
+
+// ── Secciones del formulario ──────────────────────────────────────────────────
+.form-section {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f1f5f9;
+
+  &:last-child { border-bottom: none; margin-bottom: 0; }
+}
+
+.form-section-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $blue;
+  border-bottom: 1px solid #dbeafe;
+  padding-bottom: 5px;
+  margin-bottom: 12px;
+}
+
+// ── Grillas del formulario ────────────────────────────────────────────────────
+.form-grid { display: grid; gap: 12px; }
+
+.form-grid-1 { grid-template-columns: 1fr; }
+
+.form-grid-2 {
+  grid-template-columns: 1fr 1fr;
+  @media (max-width: 560px) { grid-template-columns: 1fr; }
+}
+
+.form-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+  @media (max-width: 600px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.form-grid-diag {
+  grid-template-columns: 1fr 2fr 1fr;
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.field-span2 { grid-column: span 2; }
+
+// ── Modal ancho extendido ─────────────────────────────────────────────────────
+.modal-hc { max-width: 820px; }
+
+// ── Confirmación de cierre de entrada ────────────────────────────────────────
+.confirm-over {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55); z-index: 1100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.confirm-dialog {
+  background: $white; border-radius: 10px; padding: 24px 28px;
+  max-width: 360px; width: 90%; text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+  p { font-size: 0.95rem; color: $text; margin: 0 0 6px; }
+  .confirm-sub { font-size: 0.82rem; color: $muted; margin-bottom: 18px; }
+}
+.confirm-actions {
+  display: flex; gap: 10px; justify-content: center;
+}
+.btn-danger {
+  background: #dc2626; color: #fff; border: none;
+  border-radius: 7px; padding: 8px 18px; font-size: 0.85rem;
+  font-weight: 600; font-family: 'Poppins', sans-serif;
+  cursor: pointer; transition: background 0.15s;
+  &:hover { background: #b91c1c; }
+}

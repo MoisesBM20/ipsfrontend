@@ -1,0 +1,69 @@
+@use '../admin-shared' as *;
+
+.audit-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.entity-select {
+  height: 40px;
+  padding: 0 10px;
+  border: 1.5px solid $border;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  color: $text;
+  background: $white;
+  cursor: pointer;
+  outline: none;
+
+  &:focus { border-color: $blue; }
+}
+
+.btn-link {
+  background: none; border: none; color: $muted; font-size: 0.8rem;
+  cursor: pointer; padding: 0 4px; white-space: nowrap;
+  &:hover { color: #ef4444; text-decoration: underline; }
+}
+
+.audit-count {
+  font-size: 0.78rem;
+  color: $muted;
+  padding: 10px 16px 0;
+}
+
+.date-col { white-space: nowrap; font-size: 0.8rem; color: $muted; }
+.desc-col { font-size: 0.82rem; max-width: 400px; }
+.text-muted { color: $muted; font-size: 0.82rem; }
+
+// ── Tags de acción ────────────────────────────────────────────────────────────
+.action-tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &.tag-green  { background: #dcfce7; color: #15803d; }
+  &.tag-blue   { background: #dbeafe; color: #1d4ed8; }
+  &.tag-teal   { background: #ccfbf1; color: #0f766e; }
+  &.tag-amber  { background: #fef3c7; color: #b45309; }
+  &.tag-red    { background: #fee2e2; color: #b91c1c; }
+  &.tag-gray   { background: #f1f5f9; color: $muted; }
+  &.tag-purple { background: #ede9fe; color: #6d28d9; }
+}
+
+.entity-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: $text;
+  white-space: nowrap;
+}

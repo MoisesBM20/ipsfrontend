@@ -1,0 +1,195 @@
+// Variables
+$primary: #005cbb;
+$primary-hover: #004a96;
+$text-main: #1a1c1e;
+$text-muted: #44474e;
+$bg-light: #f8f9ff;
+$radius: 28px;
+
+.health-page {
+  font-family: 'Roboto', sans-serif;
+
+  .main-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  // --- Hero ---
+  .hero-header {
+    background: linear-gradient(135deg, $primary 0%, #0d47a1 100%);
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.8rem;
+      background: rgba(white, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin: 24px 0;
+      font-weight: 800;
+      .highlight { color: #8ab4f8; }
+    }
+
+    p { font-size: 1.1rem; opacity: 0.9; max-width: 600px; margin: 0 auto 40px; }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+
+      .stat-box {
+        background: rgba(white, 0.1);
+        padding: 20px;
+        border-radius: 20px;
+        min-width: 120px;
+        border: 1px solid rgba(white, 0.1);
+
+        .stat-number { display: block; font-size: 1.8rem; font-weight: 700; }
+        .stat-label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
+      }
+    }
+  }
+
+  // --- Services Section ---
+  .services-section {
+    padding: 80px 0;
+    background: $bg-light;
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 50px;
+      h2 { font-size: 2.2rem; font-weight: 700; color: $text-main; }
+      p { color: $text-muted; }
+    }
+  }
+
+  .services-grid {
+    display: grid;
+    gap: 24px;
+    // Ajuste grid para que las tarjetas se acomoden responsive
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  .service-card {
+    border-radius: $radius;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05) !important;
+    transition: transform 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    &:hover { transform: translateY(-8px); }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 24px 0 0 24px;
+
+      // Colores originales
+      &.blue { background: #e3f2fd; color: #1976d2; }
+      &.red { background: #fdecea; color: #d32f2f; }
+      &.teal { background: #e0f2f1; color: #00796b; }
+      &.orange { background: #fff3e0; color: #f57c00; }
+      
+      // Nuevos colores agregados para los nuevos servicios
+      &.purple { background: #f3e5f5; color: #7b1fa2; }
+      &.pink { background: #fce4ec; color: #c2185b; }
+    }
+
+    mat-card-header {
+      padding: 16px 24px 0;
+      mat-card-title { font-weight: 700; color: $text-main; font-size: 1.25rem; }
+    }
+
+    mat-card-content {
+      padding: 16px 24px;
+      flex-grow: 1;
+      p { color: $text-muted; font-size: 0.95rem; line-height: 1.4; margin-bottom: 12px; }
+      .check-icon { color: #4caf50; font-size: 18px; margin-right: 8px; }
+      
+      mat-list-item { 
+        font-size: 0.9rem; 
+        height: auto !important; 
+        padding: 4px 0; 
+        
+        // Ajuste para alinear texto en material
+        .mdc-list-item__content {
+           display: flex; align-items: center;
+        }
+      }
+    }
+
+    mat-card-actions {
+      padding: 16px 24px 24px;
+      .btn-solicitar {
+        width: 100%;
+        border-radius: 100px;
+        height: 48px;
+        font-weight: 600;
+        background-color: $primary !important;
+        color: white !important;
+
+        &:hover { background-color: $primary-hover !important; }
+      }
+    }
+  }
+
+  // --- Steps Section ---
+  .steps-section {
+    padding: 80px 0;
+    text-align: center;
+    h2 { margin-bottom: 50px; font-weight: 700; }
+
+    .steps-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+
+      .step-item {
+        flex: 1;
+        min-width: 200px;
+        max-width: 250px;
+
+        .step-circle {
+          width: 60px;
+          height: 60px;
+          background: $primary;
+          color: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.4rem;
+          font-weight: 700;
+          margin: 0 auto 20px;
+          
+          &.success { background: #4caf50; }
+        }
+        
+        .step-icon-bg { display: none; } // Oculto el bg extra si solo quieres el círculo, o ajusta según prefieras
+        
+        h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px;}
+        p { color: $text-muted; font-size: 0.9rem; }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .health-page .steps-grid { flex-direction: column; align-items: center; }
+}

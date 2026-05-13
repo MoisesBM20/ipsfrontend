@@ -1,0 +1,549 @@
+<!-- ══════════════════════════════════════════════════════ VISTA: LISTA ═══════ -->
+@if (view() === 'list') {
+
+  <div class="module-header">
+    <div class="search-row">
+      <div class="search-box">
+        <span class="material-icons">search</span>
+        <input type="text" [(ngModel)]="listSearch" placeholder="Filtrar por nombre o documento..."
+               (input)="loadList()">
+      </div>
+    </div>
+  </div>
+
+  @if (listLoading()) {
+    <div class="card"><div class="loading"><div class="spinner"></div><p>Cargando...</p></div></div>
+  } @else if (recordList().length === 0) {
+    <div class="card">
+      <div class="empty">
+        <span class="material-icons">folder_off</span>
+        <p>{{ listSearch ? 'Sin resultados para "' + listSearch + '".' : 'No hay historias clínicas registradas aún.' }}</p>
+      </div>
+    </div>
+  } @else {
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Documento</th>
+            <th>N° HC</th>
+            <th>Entradas</th>
+            <th>Apertura</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of recordList(); track item.id) {
+            <tr>
+              <td><strong>{{ item.patient_name }}</strong></td>
+              <td class="text-muted">{{ item.patient_document_type }} {{ item.patient_document }}</td>
+              <td>{{ item.record_number }}</td>
+              <td>{{ item.total_entries }}</td>
+              <td>{{ item.opened_at | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <button class="btn-primary btn-sm" (click)="selectFromList(item)">
+                  <span class="material-icons">folder_open</span> Ver HC
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}
+
+<!-- ══════════════════════════════════════════════════════ VISTA: DETALLE ═════ -->
+@if (view() === 'detail') {
+
+  <div class="detail-actions">
+    <button class="btn-secondary" (click)="backToList()">
+      <span class="material-icons">arrow_back</span> Volver a la lista
+    </button>
+    @if (record()) {
+      <button class="btn-primary" (click)="openEntryForm()">
+        <span class="material-icons">add</span> Nueva entrada
+      </button>
+      <button class="btn-secondary" (click)="exportPDF()">
+        <span class="material-icons">picture_as_pdf</span> Exportar / Imprimir
+      </button>
+    }
+  </div>
+
+  @if (searchError()) {
+    <div class="alert-error"><span class="material-icons">error_outline</span>{{ searchError() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="card"><div class="loading"><div class="spinner"></div><p>Cargando historia clínica...</p></div></div>
+  }
+
+  @if (patientInfo(); as patient) {
+    <div class="hc-doc">
+
+      <!-- ── Encabezado del documento ── -->
+      <div class="hc-doc-header">
+        <div class="hc-brand">
+          <span class="hc-brand-name">CUIDANDO DE TI</span>
+          <span class="hc-brand-sub">CyE IPS SAS</span>
+        </div>
+        <div class="hc-doc-title">
+          HISTORIA CLÍNICA
+          @if (record(); as rec) {
+            <div class="hc-doc-num">N° {{ rec.record_number }}</div>
+          }
+        </div>
+        <div class="hc-doc-contact">
+          Cali, Valle del Cauca<br>NIT: 900000000
+        </div>
+      </div>
+
+      <!-- ── DATOS GENERALES ── -->
+      <table class="hc-table">
+        <thead>
+          <tr><th class="hc-hdr" colspan="4">DATOS GENERALES</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="hc-lbl">Paciente:</td>
+            <td colspan="3"><strong>{{ patient.first_name }} {{ patient.last_name }}</strong></td>
+          </tr>
+          <tr>
+            <td class="hc-lbl">Doc. Identificación:</td>
+            <td>{{ patient.document_type }} {{ patient.document_number }}</td>
+            <td class="hc-lbl">N° Historia Clínica:</td>
+            <td>{{ record()?.record_number ?? '—' }}</td>
+          </tr>
+          <tr>
+            <td class="hc-lbl">Fecha Nacimiento:</td>
+            <td>{{ patient.birth_date | date:'dd/MM/yyyy' }}</td>
+            <td class="hc-lbl">Edad:</td>
+            <td><strong>{{ calcAge(patient.birth_date) }} años {{ calcMonths(patient.birth_date) }} meses</strong></td>
+          </tr>
+          <tr>
+            <td class="hc-lbl">Sexo Biológico:</td>
+            <td>{{ patient.gender === 'M' ? 'Masculino' : patient.gender === 'F' ? 'Femenino' : 'Indeterminado' }}</td>
+            <td class="hc-lbl">Grupo Sanguíneo:</td>
+            <td>{{ patient.blood_type ?? '—' }}</td>
+          </tr>
+          <tr>
+            <td class="hc-lbl">Aseguradora (EPS):</td>
+            <td>{{ patient.eps ?? '—' }}</td>
+            <td class="hc-lbl">Régimen:</td>
+            <td>{{ patient.regime ?? '—' }}</td>
+          </tr>
+          <tr>
+            <td class="hc-lbl">Dirección:</td>
+            <td>{{ patient.address ?? '—' }}{{ patient.city ? ', ' + patient.city : '' }}</td>
+            <td class="hc-lbl">Teléfono:</td>
+            <td>{{ patient.phone ?? '—' }}</td>
+          </tr>
+          @if (patient.allergies) {
+            <tr>
+              <td class="hc-lbl hc-alert-lbl">⚠ Alergias:</td>
+              <td colspan="3" class="hc-alert-val">{{ patient.allergies }}</td>
+            </tr>
+          }
+          @if (patient.emergency_contact_name) {
+            <tr>
+              <td class="hc-lbl">Contacto emergencia:</td>
+              <td colspan="3">{{ patient.emergency_contact_name }}{{ patient.emergency_contact_phone ? ' — ' + patient.emergency_contact_phone : '' }}{{ patient.emergency_contact_relationship ? ' (' + patient.emergency_contact_relationship + ')' : '' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- ── Sin HC aún ── -->
+      @if (notFound()) {
+        <div class="hc-no-record">
+          <span class="material-icons">note_add</span>
+          <p>Este paciente no tiene historia clínica abierta.</p>
+          <button class="btn-primary" (click)="openRecord()">
+            <span class="material-icons">folder_open</span> Abrir historia clínica
+          </button>
+        </div>
+      }
+
+      <!-- ── Entradas ── -->
+      @if (record(); as rec) {
+        @if (rec.entries.length === 0) {
+          <div class="hc-no-entries">
+            Sin entradas. Presiona <strong>Nueva entrada</strong> para comenzar la atención.
+          </div>
+        }
+
+        @for (entry of rec.entries; track entry.id; let idx = $index) {
+
+          <div class="hc-entry-sep">
+            Entrada {{ idx + 1 }} — {{ entryTypeLabel(entry.entry_type) }} — {{ entry.entry_date | date:'dd/MM/yyyy' }}
+          </div>
+
+          <!-- Atención clínica -->
+          <table class="hc-table">
+            <thead>
+              <tr><th class="hc-hdr" colspan="4">ATENCIÓN CLÍNICA</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="hc-lbl">Tipo de atención:</td>
+                <td>{{ entryTypeLabel(entry.entry_type) }}</td>
+                <td class="hc-lbl">Profesional:</td>
+                <td>{{ entry.professional_name ?? '—' }}</td>
+              </tr>
+              <tr>
+                <td class="hc-lbl">Fecha:</td>
+                <td>{{ entry.entry_date | date:'dd/MM/yyyy' }}</td>
+                <td class="hc-lbl">Hora:</td>
+                <td>{{ entry.entry_date | date:'HH:mm' }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          @if (entry.reason_for_visit) {
+            <table class="hc-table">
+              <tbody>
+                <tr><td class="hc-sub">Motivo de consulta</td></tr>
+                <tr><td class="hc-pre">{{ entry.reason_for_visit }}</td></tr>
+              </tbody>
+            </table>
+          }
+          @if (entry.anamnesis) {
+            <table class="hc-table">
+              <tbody>
+                <tr><td class="hc-sub">Anamnesis / Historia de la enfermedad actual</td></tr>
+                <tr><td class="hc-pre">{{ entry.anamnesis }}</td></tr>
+              </tbody>
+            </table>
+          }
+          @if (entry.physical_exam) {
+            <table class="hc-table">
+              <tbody>
+                <tr><td class="hc-sub">OBJETIVO — Examen físico por sistemas</td></tr>
+                <tr><td class="hc-pre">{{ entry.physical_exam }}</td></tr>
+              </tbody>
+            </table>
+          }
+          @if (entry.treatment_plan) {
+            <table class="hc-table">
+              <tbody>
+                <tr><td class="hc-sub">ANÁLISIS / PLAN DE MANEJO</td></tr>
+                <tr><td class="hc-pre">{{ entry.treatment_plan }}</td></tr>
+              </tbody>
+            </table>
+          }
+          @if (entry.additional_notes) {
+            <table class="hc-table">
+              <tbody>
+                <tr><td class="hc-sub">Notas adicionales</td></tr>
+                <tr><td class="hc-pre">{{ entry.additional_notes }}</td></tr>
+              </tbody>
+            </table>
+          }
+
+          <!-- Responsable -->
+          <table class="hc-table">
+            <tbody>
+              <tr>
+                <td class="hc-lbl hc-w110">Responsable:</td>
+                <td><strong>{{ entry.professional_name ?? '—' }}</strong></td>
+                <td class="hc-lbl hc-w50">RM:</td>
+                <td>—</td>
+                <td class="hc-lbl hc-w150">Válido como Firma Electrónica</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Signos Vitales -->
+          @if (parseVitals(entry); as vs) {
+            <table class="hc-table">
+              <thead>
+                <tr><th class="hc-hdr" colspan="8">Signos Vitales</th></tr>
+                <tr>
+                  <td class="hc-lbl hc-center">PA (mmHg)</td>
+                  <td class="hc-lbl hc-center">FC (lpm)</td>
+                  <td class="hc-lbl hc-center">FR (rpm)</td>
+                  <td class="hc-lbl hc-center">Temp (°C)</td>
+                  <td class="hc-lbl hc-center">SpO₂ (%)</td>
+                  <td class="hc-lbl hc-center">Peso (Kg)</td>
+                  <td class="hc-lbl hc-center">Talla (cm)</td>
+                  <td class="hc-lbl hc-center">IMC</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="hc-center">
+                  <td>{{ vs.blood_pressure || '—' }}</td>
+                  <td>{{ vs.heart_rate || '—' }}</td>
+                  <td>{{ vs.respiratory_rate || '—' }}</td>
+                  <td>{{ vs.temperature || '—' }}</td>
+                  <td>{{ vs.oxygen_saturation || '—' }}</td>
+                  <td>{{ vs.weight || '—' }}</td>
+                  <td>{{ vs.height || '—' }}</td>
+                  <td>{{ vs.bmi || '—' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          }
+
+          <!-- Diagnósticos -->
+          @if (entry.diagnosis_code || entry.diagnosis_description) {
+            <table class="hc-table">
+              <thead>
+                <tr><th class="hc-hdr" colspan="4">Diagnósticos</th></tr>
+                <tr>
+                  <td class="hc-lbl">Fecha</td>
+                  <td class="hc-lbl">Código CIE-10</td>
+                  <td class="hc-lbl">Descripción</td>
+                  <td class="hc-lbl">Tipo</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{ entry.entry_date | date:'dd/MM/yyyy' }}</td>
+                  <td><strong>{{ entry.diagnosis_code ?? '—' }}</strong></td>
+                  <td>{{ entry.diagnosis_description ?? '—' }}</td>
+                  <td>{{ diagnosisTypeLabel(entry.diagnosis_type) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          }
+
+          <!-- Remisión -->
+          @if (entry.referral_destination || entry.referral_reason) {
+            <table class="hc-table">
+              <thead>
+                <tr><th class="hc-hdr" colspan="4">Remisión</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="hc-lbl">Destino:</td>
+                  <td>{{ entry.referral_destination ?? '—' }}</td>
+                  <td class="hc-lbl">Motivo:</td>
+                  <td>{{ entry.referral_reason ?? '—' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          }
+
+          <!-- Prescripciones -->
+          @if (entry.prescriptions) {
+            <table class="hc-table">
+              <thead>
+                <tr><th class="hc-hdr">Prescripciones / Fórmula Médica</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="hc-pre hc-mono">{{ entry.prescriptions }}</td></tr>
+              </tbody>
+            </table>
+          }
+
+        } <!-- @for entries -->
+      } <!-- @if record -->
+    </div> <!-- .hc-doc -->
+  } <!-- @if patientInfo -->
+} <!-- @if view === detail -->
+
+
+<!-- ══════════════════════════════════ MODAL: Nueva entrada clínica ══════════ -->
+@if (showEntryForm()) {
+  <div class="modal-backdrop" (click)="closeEntryForm()">
+    <div class="modal modal-hc" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Nueva Entrada Clínica</h3>
+        <button class="btn-icon-only" (click)="closeEntryForm()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        @if (formError()) {
+          <div class="alert-error"><span class="material-icons">error_outline</span>{{ formError() }}</div>
+        }
+
+        @if (patientInfo(); as p) {
+          <div class="form-patient-banner">
+            <span class="material-icons">person</span>
+            <strong>{{ p.first_name }} {{ p.last_name }}</strong>
+            &nbsp;·&nbsp; {{ p.document_type }} {{ p.document_number }}
+            &nbsp;·&nbsp; {{ calcAge(p.birth_date) }} años
+            @if (p.eps) { &nbsp;·&nbsp; {{ p.eps }} }
+          </div>
+        }
+
+        <!-- Tipo de atención -->
+        <div class="form-section">
+          <div class="form-section-title">Tipo de Atención</div>
+          <div class="form-grid form-grid-2">
+            <div class="field">
+              <label>Tipo de entrada *</label>
+              <select [(ngModel)]="form.entry_type" name="entry_type">
+                @for (t of entryTypes; track t.value) {
+                  <option [value]="t.value">{{ t.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Signos vitales -->
+        <div class="form-section">
+          <div class="form-section-title">Signos Vitales</div>
+          <div class="form-grid form-grid-4">
+            <div class="field">
+              <label>PA (mmHg)</label>
+              <input type="text" [(ngModel)]="vitalSigns.blood_pressure" name="bp" placeholder="120/80">
+            </div>
+            <div class="field">
+              <label>FC (lpm)</label>
+              <input type="number" [(ngModel)]="vitalSigns.heart_rate" name="hr" placeholder="72">
+            </div>
+            <div class="field">
+              <label>FR (rpm)</label>
+              <input type="number" [(ngModel)]="vitalSigns.respiratory_rate" name="rr" placeholder="18">
+            </div>
+            <div class="field">
+              <label>Temperatura (°C)</label>
+              <input type="number" step="0.1" [(ngModel)]="vitalSigns.temperature" name="temp" placeholder="36.5">
+            </div>
+            <div class="field">
+              <label>SpO₂ (%)</label>
+              <input type="number" [(ngModel)]="vitalSigns.oxygen_saturation" name="spo2" placeholder="98">
+            </div>
+            <div class="field">
+              <label>Peso (kg)</label>
+              <input type="number" step="0.1" [(ngModel)]="vitalSigns.weight" name="peso"
+                     (ngModelChange)="calcBMI()" placeholder="70">
+            </div>
+            <div class="field">
+              <label>Talla (cm)</label>
+              <input type="number" [(ngModel)]="vitalSigns.height" name="talla"
+                     (ngModelChange)="calcBMI()" placeholder="170">
+            </div>
+            <div class="field">
+              <label>IMC (auto)</label>
+              <input type="number" step="0.1" [(ngModel)]="vitalSigns.bmi" name="bmi" readonly>
+            </div>
+          </div>
+        </div>
+
+        <!-- Motivo y anamnesis -->
+        <div class="form-section">
+          <div class="form-section-title">Motivo de Consulta y Anamnesis</div>
+          <div class="form-grid form-grid-1">
+            <div class="field">
+              <label>Motivo de consulta *</label>
+              <textarea [(ngModel)]="form.reason_for_visit" rows="2" name="reason"
+                        placeholder="Motivo principal de la consulta..."></textarea>
+            </div>
+            <div class="field">
+              <label>Anamnesis</label>
+              <textarea [(ngModel)]="form.anamnesis" rows="3" name="anamnesis"
+                        placeholder="Historia de la enfermedad actual, antecedentes relevantes..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Examen físico -->
+        <div class="form-section">
+          <div class="form-section-title">OBJETIVO — Examen Físico</div>
+          <div class="field">
+            <label>Hallazgos por sistemas</label>
+            <textarea [(ngModel)]="form.physical_exam" rows="3" name="phys"
+                      placeholder="Hallazgos al examen físico por sistemas..."></textarea>
+          </div>
+        </div>
+
+        <!-- Diagnóstico -->
+        <div class="form-section">
+          <div class="form-section-title">Diagnóstico (CIE-10)</div>
+          <div class="form-grid form-grid-diag">
+            <div class="field">
+              <label>Código CIE-10</label>
+              <input type="text" [(ngModel)]="form.diagnosis_code" name="cie10" placeholder="Ej: J06.9">
+            </div>
+            <div class="field field-span2">
+              <label>Descripción diagnóstica</label>
+              <input type="text" [(ngModel)]="form.diagnosis_description" name="diag_desc"
+                     placeholder="Ej: IRA no especificada">
+            </div>
+            <div class="field">
+              <label>Tipo de diagnóstico</label>
+              <select [(ngModel)]="form.diagnosis_type" name="diag_type">
+                <option value="impresion_diagnostica">Impresión diagnóstica</option>
+                <option value="confirmado">Confirmado</option>
+                <option value="descartado">Descartado</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Plan de manejo -->
+        <div class="form-section">
+          <div class="form-section-title">ANÁLISIS / Plan de Manejo</div>
+          <div class="field">
+            <label>Tratamiento / Conducta a seguir</label>
+            <textarea [(ngModel)]="form.treatment_plan" rows="2" name="treatment"
+                      placeholder="Indicaciones, conducta, paraclínicos solicitados..."></textarea>
+          </div>
+        </div>
+
+        <!-- Fórmula médica -->
+        <div class="form-section">
+          <div class="form-section-title">Prescripciones / Fórmula Médica</div>
+          <div class="field">
+            <label>Medicamentos</label>
+            <textarea [(ngModel)]="form.prescriptions" rows="3" name="presc"
+                      placeholder="Nombre del medicamento, dosis, frecuencia, vía, duración..."></textarea>
+          </div>
+        </div>
+
+        <!-- Remisión -->
+        <div class="form-section">
+          <div class="form-section-title">Remisión (si aplica)</div>
+          <div class="form-grid form-grid-2">
+            <div class="field">
+              <label>Destino de remisión</label>
+              <input type="text" [(ngModel)]="form.referral_destination" name="ref_dest"
+                     placeholder="Especialidad o institución">
+            </div>
+            <div class="field">
+              <label>Motivo de remisión</label>
+              <input type="text" [(ngModel)]="form.referral_reason" name="ref_reason"
+                     placeholder="Razón de la remisión">
+            </div>
+          </div>
+        </div>
+
+        <!-- Notas adicionales -->
+        <div class="form-section">
+          <div class="form-section-title">Notas Adicionales</div>
+          <div class="field">
+            <label>Observaciones / Próxima cita</label>
+            <textarea [(ngModel)]="form.additional_notes" rows="2" name="notes"
+                      placeholder="Recomendaciones, fecha próxima cita..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeEntryForm()">Cancelar</button>
+        <button class="btn-primary" (click)="saveEntry()" [disabled]="saving()">
+          @if (saving()) { <span class="spinner-sm"></span> Guardando... }
+          @else { <span class="material-icons">save</span> Guardar entrada }
+        </button>
+      </div>
+
+      @if (showEntryCloseConfirm()) {
+        <div class="confirm-over" (click)="showEntryCloseConfirm.set(false)">
+          <div class="confirm-dialog" (click)="$event.stopPropagation()">
+            <p><strong>¿Salir sin guardar?</strong></p>
+            <p class="confirm-sub">Perderás los datos ingresados en esta entrada.</p>
+            <div class="confirm-actions">
+              <button class="btn-secondary" (click)="showEntryCloseConfirm.set(false)">Seguir editando</button>
+              <button class="btn-danger" (click)="confirmCloseEntry()">Salir sin guardar</button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

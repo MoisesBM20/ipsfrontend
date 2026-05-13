@@ -1,0 +1,33 @@
+@use '../admin-shared' as *;
+
+.period-cell { white-space: nowrap; }
+
+.action-row {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+
+.btn-action {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: 1px solid $border; border-radius: 6px;
+  padding: 5px 10px; font-size: 0.78rem; font-family: 'Poppins',sans-serif;
+  cursor: pointer; color: $muted; white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+  .material-icons { font-size: 17px; }
+  &:hover:not(:disabled) { background: #f1f5f9; color: $text; }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+.btn-submitted {
+  border-color: #bbf7d0; color: $green;
+  &:hover:not(:disabled) { background: $green-light; }
+}
+
+.rips-info {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: $blue-light; border: 1px solid #bfdbfe;
+  border-radius: 8px; padding: 12px 14px; margin-top: 4px;
+  .material-icons { font-size: 18px; color: $blue; flex-shrink: 0; margin-top: 1px; }
+  p { margin: 0; font-size: 0.82rem; color: #1e40af; line-height: 1.5; }
+}
+
+.modal-sm { max-width: 520px; }

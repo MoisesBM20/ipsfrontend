@@ -1,0 +1,134 @@
+$primary: #005cbb;
+$primary-dark: #0a468b;
+$accent: #8ab4f8;
+$text-main: #1a1c1e;
+$text-muted: #44474e;
+$bg-light: #f8f9ff;
+$radius-lg: 24px;
+$radius-md: 16px;
+$transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+.health-page {
+  font-family: 'Roboto', sans-serif;
+  color: $text-main;
+  overflow-x: hidden;
+
+  .main-container { max-width: 1300px; margin: 0 auto; padding: 0 24px; }
+
+  // --- Hero & Stats ---
+  .hero-header {
+    background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+    color: white; padding: 80px 0; text-align: center;
+    .eyebrow { font-size: 0.8rem; background: rgba(white, 0.1); padding: 6px 16px; border-radius: 30px; margin-bottom: 20px; display: inline-block; }
+    h1 { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 800; margin-bottom: 20px; .highlight { color: $accent; } }
+    p { font-size: 1.2rem; opacity: 0.9; max-width: 650px; margin: 0 auto 40px; }
+
+    .stats-row {
+      display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+      .stat-box {
+        background: rgba(white, 0.08); border: 1px solid rgba(white, 0.1);
+        padding: 20px; border-radius: $radius-md; min-width: 150px;
+        display: flex; flex-direction: column; align-items: center; gap: 8px;
+        .icon-wrapper mat-icon { font-size: 32px; width: 32px; height: 32px; color: $accent; }
+        .stat-number { font-size: 1.8rem; font-weight: 800; display: block; }
+        .stat-label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
+      }
+    }
+  }
+
+  // --- Video Section ---
+  .video-section {
+    padding: 100px 0;
+    .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; 
+      @media (max-width: 960px) { grid-template-columns: 1fr; text-align: center; }
+    }
+    h2 { font-size: 2.4rem; font-weight: 800; .primary-text { color: $primary; } }
+    .feature-list { list-style: none; padding: 0; li { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; @media (max-width: 960px) { justify-content: center; } mat-icon { color: #4caf50; } } }
+    .video-card {
+      .video-aspect {
+        aspect-ratio: 16 / 9; border-radius: $radius-lg; overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1); background: #000;
+        .local-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+      }
+    }
+  }
+
+  // --- Carruseles (Iconos Corregidos) ---
+  .services-carousel-section {
+    padding: 80px 0; background: $bg-light;
+    .section-header { text-align: center; margin-bottom: 50px; h2 { font-weight: 800; font-size: 2.2rem; } }
+    .category-block { margin-bottom: 60px; }
+    .cat-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 25px; border-left: 6px solid $primary; padding-left: 15px; }
+
+    .carousel-wrapper {
+      position: relative; display: flex; align-items: center;
+      .nav-btn {
+        position: absolute; z-index: 10; background: white !important; color: $primary !important;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+        &.prev { left: -15px; } &.next { right: -15px; }
+        @media (max-width: 768px) { display: none; }
+      }
+    }
+
+    .carousel-container {
+      display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory;
+      padding: 15px 5px; scrollbar-width: none; &::-webkit-scrollbar { display: none; }
+    }
+
+    .service-card {
+      min-width: 320px; max-width: 320px; scroll-snap-align: start; flex-shrink: 0;
+      border-radius: $radius-lg; border: none; transition: $transition;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.05) !important;
+
+      &:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important; }
+
+      // --- CORRECCIÓN DE ICONOS CORTADOS ---
+      .card-icon {
+        width: 64px; height: 64px; border-radius: 20px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 24px 0 8px 24px;
+        overflow: hidden; // Evita que el color de fondo se desborde
+
+        mat-icon {
+          font-size: 32px; // Tamaño visual del icono
+          width: 32px;    // Contenedor del icono igual al tamaño visual
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        // Paleta de colores mejorada
+        &.teal { background: #e0f2f1; color: #00796b; }
+        &.orange { background: #fff3e0; color: #f57c00; }
+        &.blue { background: #e3f2fd; color: #1976d2; }
+        &.pink { background: #fce4ec; color: #c2185b; }
+        &.purple { background: #f3e5f5; color: #7b1fa2; }
+        &.green { background: #e8f5e9; color: #2e7d32; }
+        &.red { background: #ffebee; color: #c62828; }
+        &.indigo { background: #e8eaf6; color: #3f51b5; }
+        &.amber { background: #fff8e1; color: #ff8f00; }
+        &.lime { background: #f9fbe7; color: #827717; }
+        &.blue-grey { background: #eceff1; color: #455a64; }
+      }
+
+      mat-card-header { padding: 8px 24px; mat-card-title { font-weight: 700; font-size: 1.2rem; } }
+      mat-card-content {
+        padding: 12px 24px; p { font-size: 0.95rem; color: $text-muted; min-height: 50px; line-height: 1.5; }
+        .check { color: #4caf50; font-size: 18px; margin-right: 8px; font-weight: bold; }
+        mat-list-item { font-size: 0.85rem; height: auto !important; padding: 4px 0; }
+      }
+      mat-card-actions { padding: 0 24px 24px; .btn-cta { width: 100%; border-radius: 50px; background: $primary !important; color: white !important; font-weight: 700; height: 48px; } }
+    }
+  }
+
+  // --- Pathologies ---
+  .path-section {
+    padding: 80px 0; .path-header { text-align: center; margin-bottom: 50px; }
+    .path-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .path-card {
+      display: flex; gap: 16px; padding: 24px; background: $bg-light; border-radius: $radius-md;
+      mat-icon { color: $primary; } h4 { margin: 0; font-weight: 700; } p { margin: 0; font-size: 0.9rem; color: $text-muted; }
+    }
+  }
+}

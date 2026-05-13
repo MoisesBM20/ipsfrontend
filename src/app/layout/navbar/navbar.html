@@ -1,0 +1,95 @@
+<mat-toolbar color="primary" class="navbar-sticky">
+  <div class="navbar-container">
+    <!-- Logo y barra de búsqueda a la izquierda -->
+    <div class="left-section">
+      <!-- Logo -->
+      <div class="navbar-brand">
+        <a routerLink="/" class="logo-link">
+          <img src="assets/images/global/logo2.png" alt="Logo C&E IPS S.A.S" class="logo">
+        </a>
+      </div>
+      
+    </div>
+    
+    <!-- Navegación a la derecha -->
+    <div class="navbar-nav">
+      <a mat-button routerLink="/" class="nav-link">
+        <mat-icon>home</mat-icon>
+        <span>INICIO</span>
+      </a>
+      <a mat-button routerLink="/sueroterapia" class="nav-link">
+        <mat-icon>medical_services</mat-icon>
+        <span>SUEROTERAPIA</span>
+      </a>
+      <a mat-button routerLink="/services" class="nav-link">
+        <mat-icon>medical_services</mat-icon>
+        <span>SERVICIOS</span>
+      </a>
+
+      <a mat-button routerLink="/bussiness" class="nav-link">
+        <mat-icon>groups</mat-icon>
+        <span>NOSOTROS</span>
+      </a>
+      <a mat-button routerLink="/pqrs" class="nav-link">
+        <mat-icon>call</mat-icon>
+        <span>CONTACTO</span>
+      </a>
+      <a mat-raised-button routerLink="/admin/login" class="login-btn">
+        <mat-icon>lock</mat-icon>
+        <span>LOGIN</span>
+      </a>
+    </div>
+    
+    <!-- Botón móvil -->
+    <div class="mobile-toggle">
+      <button mat-icon-button (click)="toggleMenu()" class="menu-btn">
+        <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
+
+<!-- Menú móvil -->
+<div class="mobile-menu" [class.active]="isMenuOpen">
+  <!-- Nueva Barra de búsqueda móvil -->
+  <div class="mobile-search-container">
+    <div class="mobile-search-wrapper">
+      <input 
+        type="text" 
+        placeholder="Buscar servicios..." 
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        class="mobile-search-input">
+      <button 
+        (click)="onSearch()"
+        class="mobile-search-button">
+        <mat-icon>search</mat-icon>
+      </button>
+    </div>
+  </div>
+  
+  <a mat-button routerLink="/" class="mobile-nav-link" (click)="closeMenu()">
+    <mat-icon>home</mat-icon>
+    <span>INICIO</span>
+  </a>
+  <a mat-button routerLink="/sueroterapia" class="mobile-nav-link" (click)="closeMenu()">
+    <mat-icon>medical_services</mat-icon>
+    <span>SUEROTERAPIA</span>
+  </a>
+  <a mat-button routerLink="/services" class="mobile-nav-link" (click)="closeMenu()">
+    <mat-icon>medical_services</mat-icon>
+    <span>SERVICIOS</span>
+  </a>
+  <a mat-button routerLink="/bussiness" class="mobile-nav-link" (click)="closeMenu()">
+    <mat-icon>groups</mat-icon>
+    <span>NOSOTROS</span>
+  </a>
+  <a mat-button routerLink="/pqrs" class="mobile-nav-link" (click)="closeMenu()">
+    <mat-icon>call</mat-icon>
+    <span>CONTACTO</span>
+  </a>
+  <a mat-raised-button routerLink="/admin/login" class="mobile-login-btn" (click)="closeMenu()">
+    <mat-icon>lock</mat-icon>
+    <span>LOGIN</span>
+  </a>
+</div>

@@ -1,0 +1,100 @@
+<div class="registro-page">
+  <div class="registro-card">
+    <div class="registro-header">
+      <img src="assets/images/global/logo2.png" alt="Logo IPS" class="logo">
+      <h1>Crear cuenta de paciente</h1>
+      <p>Regístrate para agendar tus citas en línea</p>
+    </div>
+
+    @if (errorMsg()) {
+      <div class="alert-error">
+        <span class="material-icons">error_outline</span> {{ errorMsg() }}
+      </div>
+    }
+
+    <div class="form-grid">
+      <div class="field field-full">
+        <label>Nombre completo *</label>
+        <input type="text" [(ngModel)]="form.full_name" name="full_name" placeholder="Nombres y apellidos">
+      </div>
+      <div class="field">
+        <label>Tipo de documento *</label>
+        <select [(ngModel)]="form.document_type" name="doc_type">
+          @for (dt of documentTypes; track dt.value) {
+            <option [value]="dt.value">{{ dt.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label>Número de documento *</label>
+        <input type="text" [(ngModel)]="form.document_number" name="doc_num" placeholder="Ej: 1012345678">
+      </div>
+      <div class="field">
+        <label>Fecha de nacimiento *</label>
+        <input type="date" [(ngModel)]="form.birth_date" name="birth_date">
+      </div>
+      <div class="field">
+        <label>Sexo *</label>
+        <select [(ngModel)]="form.gender" name="gender">
+          @for (g of genders; track g.value) {
+            <option [value]="g.value">{{ g.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="field field-full">
+        <label>Correo electrónico *</label>
+        <input type="email" [(ngModel)]="form.email" name="email" placeholder="correo@ejemplo.com">
+      </div>
+      <div class="field">
+        <label>Contraseña *</label>
+        <input type="password" [(ngModel)]="form.password" name="password" placeholder="Mínimo 6 caracteres">
+      </div>
+      <div class="field">
+        <label>Confirmar contraseña *</label>
+        <input type="password" [(ngModel)]="form.password_confirm" name="password_confirm" placeholder="Repite la contraseña">
+      </div>
+      <div class="field">
+        <label>Grupo sanguíneo *</label>
+        <select [(ngModel)]="form.blood_type" name="blood_type">
+          @for (bt of bloodTypes; track bt.value) {
+            <option [value]="bt.value">{{ bt.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label>Teléfono *</label>
+        <input type="tel" [(ngModel)]="form.phone" name="phone" placeholder="Ej: 3001234567">
+      </div>
+      <div class="field">
+        <label>EPS / Aseguradora *</label>
+        <input type="text" [(ngModel)]="form.eps" name="eps" placeholder="Ej: Sura, Nueva EPS">
+      </div>
+      <div class="field">
+        <label>Régimen *</label>
+        <select [(ngModel)]="form.regime" name="regime">
+          <option value="">Seleccionar...</option>
+          @for (r of regimes; track r) {
+            <option [value]="r">{{ r }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label>Ciudad *</label>
+        <input type="text" [(ngModel)]="form.city" name="city" placeholder="Ej: Cali">
+      </div>
+      <div class="field field-full">
+        <label>Dirección *</label>
+        <input type="text" [(ngModel)]="form.address" name="address" placeholder="Dirección de residencia">
+      </div>
+    </div>
+
+    <button class="btn-submit" (click)="onSubmit()" [disabled]="loading()">
+      @if (loading()) { <span class="spinner"></span> Creando cuenta... }
+      @else { Crear mi cuenta }
+    </button>
+
+    <p class="login-link">
+      ¿Ya tienes cuenta? <a routerLink="/admin/login">Iniciar sesión</a>
+    </p>
+  </div>
+</div>

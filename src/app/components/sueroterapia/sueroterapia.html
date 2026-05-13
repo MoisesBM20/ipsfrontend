@@ -1,0 +1,128 @@
+<div class="health-page">
+  <header class="hero-header">
+    <div class="main-container">
+      <div class="hero-content">
+        <span class="eyebrow">CUIDANDO DE TI C&E IPS S.A.S</span>
+        <h1>Sueroterapia <span class="highlight">Ortomolecular</span></h1>
+        <p>Tratamientos intravenosos directamente en tu hogar con rigor científico y seguridad clínica.</p>
+        
+        <div class="stats-row">
+          <div class="stat-box" matTooltip="IPS legalmente constituida">
+            <div class="icon-wrapper"><mat-icon>verified</mat-icon></div>
+            <div class="text-wrapper">
+              <span class="stat-number">IPS</span>
+              <span class="stat-label">Habilitada</span>
+            </div>
+          </div>
+          <div class="stat-box" matTooltip="Atención en toda la ciudad">
+            <div class="icon-wrapper"><mat-icon>location_on</mat-icon></div>
+            <div class="text-wrapper">
+              <span class="stat-number">Cali</span>
+              <span class="stat-label">Sede Principal</span>
+            </div>
+          </div>
+          <div class="stat-box" matTooltip="Atención todos los días">
+            <div class="icon-wrapper"><mat-icon>schedule</mat-icon></div>
+            <div class="text-wrapper">
+              <span class="stat-number">24/7</span>
+              <span class="stat-label">Disponibilidad</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="video-section">
+    <div class="main-container">
+      <div class="video-grid">
+        <div class="video-info">
+          <span class="badge">Nuestra Experiencia</span>
+          <h2>Cómo funciona la <span class="primary-text">Sueroterapia Domiciliaria</span></h2>
+          <p>Llevamos la clínica a tu hogar. Nuestro proceso garantiza la máxima absorción de nutrientes bajo estricta supervisión profesional.</p>
+          <ul class="feature-list">
+            <li><mat-icon>check_circle</mat-icon> Evaluación médica previa</li>
+            <li><mat-icon>check_circle</mat-icon> Protocolos personalizados</li>
+            <li><mat-icon>check_circle</mat-icon> Insumos certificados</li>
+          </ul>
+        </div>
+        <div class="video-card">
+          <div class="video-aspect">
+            <video 
+              class="local-video" 
+              src="assets/sueroterapia.mp4" 
+              preload="metadata"
+              playsinline 
+              controls
+              poster="assets/img/preview-video.jpg"> Tu navegador no soporta videos.
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="services-carousel-section">
+    <div class="main-container">
+      <div class="section-header">
+        <h2>Portafolio de Especialidades</h2>
+        <p>Desliza o usa las flechas para explorar nuestros protocolos</p>
+      </div>
+
+      <div class="category-block" *ngFor="let cat of categorias">
+        <h3 class="cat-title">{{cat.nombre}}</h3>
+        
+        <div class="carousel-wrapper">
+          <button mat-mini-fab class="nav-btn prev" (click)="scroll(caru, 'left')">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+
+          <div class="carousel-container" #caru>
+            <mat-card class="service-card" *ngFor="let p of cat.protocolos">
+              <div class="card-icon" [ngClass]="p.color" [matTooltip]="'Protocolo: ' + p.titulo">
+                <mat-icon>{{p.icon}}</mat-icon>
+              </div>
+              
+              <mat-card-header>
+                <mat-card-title>{{p.titulo}}</mat-card-title>
+              </mat-card-header>
+
+              <mat-card-content>
+                <p>{{p.desc}}</p>
+                <mat-list>
+                  <mat-list-item *ngFor="let item of p.items">
+                    <mat-icon matListItemIcon class="check">done</mat-icon>
+                    <span matListItemTitle>{{item}}</span>
+                  </mat-list-item>
+                </mat-list>
+              </mat-card-content>
+
+              <mat-card-actions>
+                <button mat-flat-button class="btn-cta" routerLink="/pqrs">SOLICITAR CITA</button>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+
+          <button mat-mini-fab class="nav-btn next" (click)="scroll(caru, 'right')">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="path-section">
+    <div class="main-container">
+      <div class="path-header"><h2>Apoyo en Patologías Crónicas</h2></div>
+      <div class="path-grid">
+        <div class="path-card" *ngFor="let pat of patologias">
+          <mat-icon>medical_services</mat-icon>
+          <div>
+            <h4>{{pat.titulo}}</h4>
+            <p>{{pat.desc}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
