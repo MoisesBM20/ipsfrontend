@@ -1,0 +1,12 @@
+@use '../admin-shared' as *;
+
+.text-muted { color: $muted; font-size: 0.85rem; }
+.modal-sm   { max-width: 460px; }
+
+.btn-danger-sm {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: none; border: 1px solid #fca5a5; border-radius: 6px;
+  padding: 5px 8px; cursor: pointer; color: #ef4444; transition: background 0.12s;
+  .material-icons { font-size: 18px; }
+  &:hover { background: #fef2f2; }
+}

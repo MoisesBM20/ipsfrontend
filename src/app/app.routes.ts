@@ -44,6 +44,7 @@ export const routes: Routes = [
                     { path: 'rips',         loadComponent: () => import('./admin/rips/rips').then(m => m.RipsComponent),                  title: 'RIPS' },
                     { path: 'clinical',     loadComponent: () => import('./admin/clinical/clinical').then(m => m.ClinicalComponent),        title: 'Historias Clínicas' },
                     { path: 'audit',        loadComponent: () => import('./admin/audit/audit').then(m => m.AuditComponent),                    title: 'Registro de Actividad' },
+                    { path: 'services',     loadComponent: () => import('./admin/services/services').then(m => m.ServicesComponent),            title: 'Servicios' },
                     { path: '',             redirectTo: 'dashboard', pathMatch: 'full' },
                 ],
             },

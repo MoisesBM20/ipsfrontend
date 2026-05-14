@@ -6,7 +6,7 @@ $sidebar-active: #1d56a3;
 $accent: #2d8cff;
 $text-dim: #94a3b8;
 $text-bright: #f1f5f9;
-$topbar-h: 56px;
+$topbar-h: 72px;
 $page-bg: #f1f5f9;
 
 :host { display: block; height: 100vh; }
@@ -35,37 +35,38 @@ $page-bg: #f1f5f9;
 .shell.collapsed .nav-label,
 .shell.collapsed .user-text       { display: none; }
 .shell.collapsed .collapse-btn    { margin-left: auto; }
+.shell.collapsed .brand-logo      { max-width: 36px; }
 
 .sidebar-top {
   display: flex;
   align-items: center;
-  padding: 0 12px;
-  height: $topbar-h;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 0 14px;
+  height: 72px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   gap: 8px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
   overflow: hidden;
   flex: 1;
+  min-width: 0;
 }
 
 .brand-logo {
-  width: 32px;
-  height: 32px;
+  height: 44px;
+  width: auto;
+  max-width: 164px;
   object-fit: contain;
+  object-position: left center;
   filter: brightness(0) invert(1);
   flex-shrink: 0;
+  transition: max-width 0.25s ease;
 }
 
 .brand-name {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: $text-bright;
-  white-space: nowrap;
+  display: none;
 }
 
 .collapse-btn {

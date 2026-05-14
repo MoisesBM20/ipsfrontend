@@ -47,6 +47,7 @@ export class AdminShell {
     { icon: 'manage_accounts', label: 'Empleados',         route: '/admin/users',         roles: ['admin'] },
     { icon: 'summarize',       label: 'RIPS',              route: '/admin/rips',          roles: ['admin','auditor'] },
     { icon: 'history',         label: 'Actividad',         route: '/admin/audit',         roles: ['admin','auditor'] },
+    { icon: 'medical_services',label: 'Servicios',         route: '/admin/services',      roles: ['admin'] },
   ];
 
   constructor() {

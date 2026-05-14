@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import {
   ApiService, ClinicalRecord, ClinicalEntry, ClinicalEntryCreate,
-  EntryType, Patient, VitalSigns, ClinicalRecordSummary,
+  EntryType, Patient, VitalSigns, ClinicalRecordSummary, PatientSummary,
 } from '../../services/api.service';
 
 @Component({
@@ -24,6 +24,13 @@ export class ClinicalComponent implements OnInit {
   recordList = signal<ClinicalRecordSummary[]>([]);
   listLoading = signal(true);
   listSearch = '';
+
+  // Nueva HC desde lista de pacientes
+  showNewHC = signal(false);
+  newHCSearch = '';
+  newHCResults = signal<PatientSummary[]>([]);
+  newHCSearching = signal(false);
+  newHCOpening = signal(false);
 
   // Detail
   patientInfo = signal<Patient | null>(null);
@@ -85,6 +92,51 @@ export class ClinicalComponent implements OnInit {
     this.api.getPatient(item.patient_id).subscribe({
       next: (p) => { this.patientInfo.set(p); this.loadRecord(p.id); },
       error: () => this.loading.set(false),
+    });
+  }
+
+  // ── Nueva HC ──────────────────────────────────────────────────────────────────
+  openNewHCModal(): void {
+    this.newHCSearch = '';
+    this.newHCResults.set([]);
+    this.newHCOpening.set(false);
+    this.showNewHC.set(true);
+  }
+
+  searchPatientsForHC(): void {
+    if (!this.newHCSearch.trim()) return;
+    this.newHCSearching.set(true);
+    this.api.getPatients(this.newHCSearch.trim()).subscribe({
+      next: (data) => { this.newHCResults.set(data); this.newHCSearching.set(false); },
+      error: () => this.newHCSearching.set(false),
+    });
+  }
+
+  selectPatientForHC(summary: PatientSummary): void {
+    this.newHCOpening.set(true);
+    this.api.getPatient(summary.id).subscribe({
+      next: (patient) => {
+        this.patientInfo.set(patient);
+        this.view.set('detail');
+        this.showNewHC.set(false);
+        this.record.set(null);
+        this.notFound.set(false);
+        this.loading.set(true);
+        this.api.getClinicalRecord(patient.id).subscribe({
+          next: (r) => { this.record.set(r); this.loading.set(false); },
+          error: (err) => {
+            this.loading.set(false);
+            if (err.status === 404) {
+              // No tiene HC: crearla automáticamente
+              this.api.openClinicalRecord(patient.id).subscribe({
+                next: (r) => { this.record.set(r); this.notFound.set(false); this.loadList(); },
+                error: () => this.notFound.set(true),
+              });
+            }
+          },
+        });
+      },
+      error: () => this.newHCOpening.set(false),
     });
   }
 

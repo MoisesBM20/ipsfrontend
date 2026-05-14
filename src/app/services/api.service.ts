@@ -145,6 +145,10 @@ export interface PortalBookingRequest {
   reason?: string;
 }
 
+export interface ServiceItem {
+  id: number; name: string; is_active: boolean; created_at: string;
+}
+
 export interface AuditLog {
   id: number;
   user_id: number | null;
@@ -188,6 +192,12 @@ export class ApiService {
   }
   toggleUserActive(id: number, is_active: boolean): Observable<User> {
     return this.http.patch<User>(`${BASE}/users/${id}`, { is_active });
+  }
+  updateUser(id: number, body: { role?: UserRole; specialty?: string; registration_number?: string; full_name?: string; phone?: string }): Observable<User> {
+    return this.http.patch<User>(`${BASE}/users/${id}`, body);
+  }
+  getUserByDocument(doc: string): Observable<User> {
+    return this.http.get<User>(`${BASE}/users/by-document/${doc}`);
   }
 
   // Patients
@@ -328,5 +338,16 @@ export class ApiService {
   }
   markRIPSSubmitted(id: number): Observable<RIPSReport> {
     return this.http.patch<RIPSReport>(`${BASE}/rips/${id}/submit`, {});
+  }
+
+  // Servicios (especialidades parametrizadas)
+  getServices(): Observable<ServiceItem[]> {
+    return this.http.get<ServiceItem[]>(`${BASE}/services/`);
+  }
+  createService(name: string): Observable<ServiceItem> {
+    return this.http.post<ServiceItem>(`${BASE}/services/`, { name });
+  }
+  deleteService(id: number): Observable<any> {
+    return this.http.delete(`${BASE}/services/${id}`);
   }
 }

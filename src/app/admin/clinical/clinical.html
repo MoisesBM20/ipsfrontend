@@ -9,6 +9,9 @@
                (input)="loadList()">
       </div>
     </div>
+    <button class="btn-primary" (click)="openNewHCModal()">
+      <span class="material-icons">note_add</span> Nueva HC
+    </button>
   </div>
 
   @if (listLoading()) {
@@ -343,6 +346,60 @@
   } <!-- @if patientInfo -->
 } <!-- @if view === detail -->
 
+
+<!-- ══════════════════════════════════ MODAL: Nueva HC (buscar paciente) ════ -->
+@if (showNewHC()) {
+  <div class="modal-backdrop" (click)="showNewHC.set(false)">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Nueva Historia Clínica</h3>
+        <button class="btn-icon-only" (click)="showNewHC.set(false)">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-hint">Busca el paciente registrado al que deseas abrir o ver la HC.</p>
+
+        <div class="search-row-inline">
+          <input type="text" [(ngModel)]="newHCSearch" placeholder="Nombre o número de documento..."
+                 (keydown.enter)="searchPatientsForHC()">
+          <button class="btn-primary" (click)="searchPatientsForHC()" [disabled]="newHCSearching()">
+            @if (newHCSearching()) { <span class="spinner-sm"></span> }
+            @else { <span class="material-icons">search</span> }
+            Buscar
+          </button>
+        </div>
+
+        @if (newHCOpening()) {
+          <div class="loading" style="padding:24px 0">
+            <div class="spinner"></div><p>Abriendo historia clínica...</p>
+          </div>
+        } @else if (newHCResults().length > 0) {
+          <div class="promote-found-card" style="margin-top:14px;padding:0;overflow:hidden">
+            @for (p of newHCResults(); track p.id) {
+              <button class="hc-patient-row" (click)="selectPatientForHC(p)">
+                <span class="material-icons">person</span>
+                <div>
+                  <strong>{{ p.first_name }} {{ p.last_name }}</strong>
+                  <span>{{ p.document_type }} {{ p.document_number }}</span>
+                </div>
+                <span class="material-icons arrow">chevron_right</span>
+              </button>
+            }
+          </div>
+        } @else if (newHCSearch && !newHCSearching()) {
+          <div class="empty" style="padding:24px 0">
+            <span class="material-icons">person_search</span>
+            <p>No se encontraron pacientes con ese criterio.</p>
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="showNewHC.set(false)">Cancelar</button>
+      </div>
+    </div>
+  </div>
+}
 
 <!-- ══════════════════════════════════ MODAL: Nueva entrada clínica ══════════ -->
 @if (showEntryForm()) {

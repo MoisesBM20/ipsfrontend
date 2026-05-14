@@ -2,6 +2,7 @@
 
 .name-cell { font-weight: 500; }
 .inactive-row td { opacity: 0.55; }
+.actions-cell { display: flex; align-items: center; gap: 4px; }
 
 .btn-toggle {
   display: inline-flex; align-items: center; gap: 5px;
@@ -10,4 +11,31 @@
   cursor: pointer; color: $muted; white-space: nowrap;
   .material-icons { font-size: 18px; }
   &:hover { background: #f1f5f9; color: $text; }
+}
+
+.modal-sm { max-width: 480px; }
+
+.promote-search {
+  margin-bottom: 4px;
+  .search-label { font-size: 0.78rem; font-weight: 600; color: $text; text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 8px; }
+}
+
+.search-row-inline {
+  display: flex; gap: 8px;
+  input { flex: 1; border: 1.5px solid $border; border-radius: 7px; padding: 9px 12px; font-size: 0.875rem; font-family: 'Poppins',sans-serif; color: $text; background: #f8fafc; outline: none;
+    &:focus { border-color: $blue; background: $white; box-shadow: 0 0 0 2px rgba($blue,0.1); }
+  }
+}
+
+.promote-found-card {
+  background: #f8fafc; border: 1px solid $border; border-radius: 8px;
+  padding: 12px 14px; margin-top: 12px;
+}
+.promote-found-info {
+  display: flex; align-items: center; gap: 10px;
+  .material-icons { font-size: 32px; color: $muted; }
+  div { flex: 1; display: flex; flex-direction: column; gap: 2px;
+    strong { font-size: 0.9rem; color: $text; }
+    span { font-size: 0.8rem; color: $muted; }
+  }
 }

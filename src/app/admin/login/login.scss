@@ -37,10 +37,18 @@ $error: #b91c1c;
 .login-header {
   margin-bottom: 32px;
 
-  .login-logo {
-    height: 48px;
+  .logo-wrap {
+    display: inline-block;
+    background: $navy;
+    border-radius: 14px;
+    padding: 14px 28px;
     margin-bottom: 20px;
+  }
+
+  .login-logo {
+    height: 56px;
     display: block;
+    filter: brightness(0) invert(1);
   }
 
   h1 {

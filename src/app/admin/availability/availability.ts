@@ -43,9 +43,9 @@ export class AvailabilityComponent implements OnInit {
   ngOnInit(): void {
     this.api.getProfessionals().subscribe(p => {
       this.professionals.set(p);
-      // Auto-seleccionar si el usuario es doctor/enfermero
+      // Auto-seleccionar al usuario actual si aparece en la lista
       const me = this.auth.currentUser();
-      if (me?.role === 'doctor' || me?.role === 'enfermero') {
+      if (me && me.role !== 'admin') {
         const match = p.find(x => x.id === (me as any).id);
         if (match) { this.selectedProfId.set(match.id); this.loadSlots(); }
         else if (p.length) { this.selectedProfId.set(p[0].id); this.loadSlots(); }

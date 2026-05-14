@@ -1,8 +1,12 @@
 <div class="module-header">
-  <div></div>
-  <button class="btn-primary" (click)="openForm()">
-    <span class="material-icons">person_add</span> Nuevo empleado
-  </button>
+  <div class="search-row">
+    <button class="btn-primary" (click)="openForm()">
+      <span class="material-icons">person_add</span> Nuevo empleado
+    </button>
+    <button class="btn-secondary" (click)="openPromote()" title="Buscar un usuario existente y asignarle un rol de empleado">
+      <span class="material-icons">manage_accounts</span> Promover usuario
+    </button>
+  </div>
 </div>
 
 <div class="card">
@@ -36,11 +40,13 @@
                 {{ u.is_active ? 'Activo' : 'Inactivo' }}
               </span>
             </td>
-            <td>
+            <td class="actions-cell">
+              <button class="btn-icon-only" (click)="openEdit(u)" title="Editar rol y datos">
+                <span class="material-icons">edit</span>
+              </button>
               <button class="btn-toggle" (click)="toggleActive(u)"
-                [title]="u.is_active ? 'Desactivar usuario' : 'Activar usuario'">
+                [title]="u.is_active ? 'Desactivar' : 'Activar'">
                 <span class="material-icons">{{ u.is_active ? 'toggle_on' : 'toggle_off' }}</span>
-                {{ u.is_active ? 'Desactivar' : 'Activar' }}
               </button>
             </td>
           </tr>
@@ -50,6 +56,7 @@
   }
 </div>
 
+<!-- ── Modal: Crear empleado ─────────────────────────────────────────────── -->
 @if (showForm()) {
   <div class="modal-backdrop" (click)="showForm.set(false)">
     <div class="modal" (click)="$event.stopPropagation()">
@@ -63,39 +70,44 @@
         <div class="form-grid">
           <div class="field field-full">
             <label>Nombre completo *</label>
-            <input type="text" [(ngModel)]="form.full_name" name="full_name" placeholder="Nombres y apellidos">
+            <input type="text" [(ngModel)]="form.full_name" placeholder="Nombres y apellidos">
           </div>
           <div class="field">
             <label>Correo electrónico *</label>
-            <input type="email" [(ngModel)]="form.email" name="email" placeholder="usuario@dominio.com">
+            <input type="email" [(ngModel)]="form.email" placeholder="usuario@dominio.com">
           </div>
           <div class="field">
             <label>Contraseña *</label>
-            <input type="password" [(ngModel)]="form.password" name="password" placeholder="Mín. 8 caracteres">
+            <input type="password" [(ngModel)]="form.password" placeholder="Mín. 8 caracteres">
           </div>
           <div class="field">
             <label>Número de documento *</label>
-            <input type="text" [(ngModel)]="form.document_number" name="doc_num" placeholder="Ej: 1012345678">
+            <input type="text" [(ngModel)]="form.document_number" placeholder="Ej: 1012345678">
           </div>
           <div class="field">
             <label>Teléfono</label>
-            <input type="tel" [(ngModel)]="form.phone" name="phone" placeholder="Ej: 3001234567">
+            <input type="tel" [(ngModel)]="form.phone" placeholder="Ej: 3001234567">
           </div>
           <div class="field">
             <label>Rol *</label>
-            <select [(ngModel)]="form.role" name="role">
+            <select [(ngModel)]="form.role">
               @for (r of roles; track r.value) {
                 <option [value]="r.value">{{ r.label }}</option>
               }
             </select>
           </div>
           <div class="field">
-            <label>Especialidad</label>
-            <input type="text" [(ngModel)]="form.specialty" name="specialty" placeholder="Ej: Medicina General">
+            <label>Especialidad / Servicio</label>
+            <select [(ngModel)]="form.specialty">
+              <option value="">— Sin especialidad —</option>
+              @for (s of serviceList(); track s.id) {
+                <option [value]="s.name">{{ s.name }}</option>
+              }
+            </select>
           </div>
           <div class="field">
             <label>No. Tarjeta profesional</label>
-            <input type="text" [(ngModel)]="form.registration_number" name="reg_num" placeholder="Ej: RM-001234">
+            <input type="text" [(ngModel)]="form.registration_number" placeholder="Ej: RM-001234">
           </div>
         </div>
       </div>
@@ -105,6 +117,133 @@
           @if (saving()) { <span class="spinner-sm"></span> Guardando... }
           @else { <span class="material-icons">save</span> Crear empleado }
         </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Modal: Editar rol de empleado ─────────────────────────────────────── -->
+@if (showEdit()) {
+  <div class="modal-backdrop" (click)="showEdit.set(false)">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Editar rol — {{ editTarget()?.full_name }}</h3>
+        <button class="btn-icon-only" (click)="showEdit.set(false)"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        @if (editError()) { <div class="alert-error"><span class="material-icons">error_outline</span>{{ editError() }}</div> }
+        <div class="form-grid">
+          <div class="field field-full">
+            <label>Rol *</label>
+            <select [(ngModel)]="editForm.role">
+              @for (r of roles; track r.value) {
+                <option [value]="r.value">{{ r.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label>Especialidad / Servicio</label>
+            <select [(ngModel)]="editForm.specialty">
+              <option value="">— Sin especialidad —</option>
+              @for (s of serviceList(); track s.id) {
+                <option [value]="s.name">{{ s.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label>No. Tarjeta profesional</label>
+            <input type="text" [(ngModel)]="editForm.registration_number" placeholder="Ej: RM-001234">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="showEdit.set(false)">Cancelar</button>
+        <button class="btn-primary" (click)="saveEdit()" [disabled]="editSaving()">
+          @if (editSaving()) { <span class="spinner-sm"></span> Guardando... }
+          @else { <span class="material-icons">save</span> Guardar cambios }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Modal: Promover usuario ────────────────────────────────────────────── -->
+@if (showPromote()) {
+  <div class="modal-backdrop" (click)="showPromote.set(false)">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Promover usuario a empleado</h3>
+        <button class="btn-icon-only" (click)="showPromote.set(false)"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        @if (promoteError()) { <div class="alert-error"><span class="material-icons">error_outline</span>{{ promoteError() }}</div> }
+
+        <!-- Búsqueda por documento -->
+        <div class="promote-search">
+          <label class="search-label">Buscar por número de documento</label>
+          <div class="search-row-inline">
+            <input type="text" [(ngModel)]="promoteDoc" placeholder="Ej: 1012345678"
+              (keyup.enter)="searchPromote()">
+            <button class="btn-primary" (click)="searchPromote()" [disabled]="promoteSearching() || !promoteDoc.trim()">
+              @if (promoteSearching()) { <span class="spinner-sm"></span> }
+              @else { <span class="material-icons">search</span> }
+              Buscar
+            </button>
+          </div>
+        </div>
+
+        @if (promoteNotFound()) {
+          <div class="alert-error" style="margin-top:12px">
+            <span class="material-icons">person_off</span>
+            No se encontró ningún usuario con ese documento.
+          </div>
+        }
+
+        @if (promoteFound(); as user) {
+          <div class="promote-found-card">
+            <div class="promote-found-info">
+              <span class="material-icons">account_circle</span>
+              <div>
+                <strong>{{ user.full_name }}</strong>
+                <span>{{ user.email }}</span>
+                <span>Doc: {{ user.document_number }}</span>
+              </div>
+              <span class="badge" [class]="roleBadgeClass(user.role)">{{ roleLabel(user.role) }}</span>
+            </div>
+          </div>
+          <div class="form-grid" style="margin-top:16px">
+            <div class="field field-full">
+              <label>Nuevo rol *</label>
+              <select [(ngModel)]="promoteForm.role">
+                @for (r of roles; track r.value) {
+                  <option [value]="r.value">{{ r.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label>Especialidad / Servicio</label>
+              <select [(ngModel)]="promoteForm.specialty">
+                <option value="">— Sin especialidad —</option>
+                @for (s of serviceList(); track s.id) {
+                  <option [value]="s.name">{{ s.name }}</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label>No. Tarjeta profesional</label>
+              <input type="text" [(ngModel)]="promoteForm.registration_number" placeholder="Ej: RM-001234">
+            </div>
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="showPromote.set(false)">Cancelar</button>
+        @if (promoteFound()) {
+          <button class="btn-primary" (click)="savePromote()" [disabled]="promoteSaving()">
+            @if (promoteSaving()) { <span class="spinner-sm"></span> Guardando... }
+            @else { <span class="material-icons">upgrade</span> Asignar rol }
+          </button>
+        }
       </div>
     </div>
   </div>
